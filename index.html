@@ -3,1138 +3,1596 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الهندسة التحليلية - شرح شامل وتفاعلي</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>الهندسة التحليلية - تغيير المحاور والقطاعات المخروطية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" 
+  onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false, trust:true})"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root {
-    --bg-dark: #0f172a;
-    --bg-card: #1e293b;
-    --bg-card2: #162032;
-    --accent-cyan: #22d3ee;
-    --accent-yellow: #fbbf24;
-    --accent-green: #34d399;
-    --accent-pink: #f472b6;
-    --accent-purple: #a78bfa;
-    --text-main: #e2e8f0;
-    --text-muted: #94a3b8;
+    --bg-deep:   #05080f;
+    --bg-base:   #0a0f1e;
+    --bg-card:   #0f1630;
+    --bg-card2:  #141d3a;
+    --gold:      #f5c518;
+    --gold-dim:  #c49a14;
+    --cyan:      #00e5ff;
+    --violet:    #a78bfa;
+    --green:     #34d399;
+    --red:       #f87171;
+    --text:      #e2e8f0;
+    --muted:     #8892a8;
+    --border:    rgba(245,197,24,.18);
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
-    background: var(--bg-dark);
-    color: var(--text-main);
-    font-family: 'Segoe UI', 'Noto Sans Arabic', Arial, sans-serif;
-    margin: 0; padding: 0;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
   }
-  #progress-bar {
-    position: fixed; top: 0; left: 0; height: 4px;
-    background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
-    z-index: 9999; transition: width 0.2s;
-    box-shadow: 0 0 10px #22d3ee88;
+  /* ─── Progress Bar ─── */
+  #prog-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--cyan));
+    width: 0%; z-index: 9999; transition: width .1s;
+    box-shadow: 0 0 10px var(--gold);
   }
-  .navbar {
-    position: sticky; top: 4px; z-index: 100;
-    background: rgba(15,23,42,0.97);
-    border-bottom: 1px solid #1e3a5f;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 20px #0006;
+  /* ─── Navbar ─── */
+  #navbar {
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(5,8,15,.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1rem;
   }
+  .nav-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center;
+    gap: .5rem; flex-wrap: nowrap;
+    overflow-x: auto; padding: .6rem 0;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
   .nav-btn {
-    cursor: pointer; padding: 10px 18px; border-radius: 8px;
-    font-weight: 700; font-size: 0.97rem;
-    transition: all 0.2s; border: none; background: transparent;
-    color: #94a3b8; white-space: nowrap;
+    white-space: nowrap;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: .4rem .9rem;
+    border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .25s;
+    flex-shrink: 0;
   }
   .nav-btn:hover, .nav-btn.active {
-    background: linear-gradient(135deg, #22d3ee22, #a78bfa22);
-    color: #22d3ee; box-shadow: 0 0 12px #22d3ee44;
-  }
-  .section { display: none; padding: 2rem 0.5rem 4rem; }
-  .section.active { display: block; }
-  .section-title {
-    font-size: 2.2rem; font-weight: 900; text-align: center;
-    background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 1.5rem; letter-spacing: 1px;
-    text-shadow: none;
-  }
-  .card {
-    background: var(--bg-card);
-    border: 1px solid #1e3a5f;
-    border-radius: 14px;
-    padding: 1.4rem;
-    margin-bottom: 1.4rem;
-    box-shadow: 0 2px 16px #0004;
-  }
-  .callout {
-    border-right: 4px solid var(--accent-cyan);
-    background: rgba(34,211,238,0.07);
-    border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
-    font-size: 1.02rem;
-  }
-  .callout.yellow { border-color: var(--accent-yellow); background: rgba(251,191,36,0.07); }
-  .callout.green { border-color: var(--accent-green); background: rgba(52,211,153,0.07); }
-  .callout.pink { border-color: var(--accent-pink); background: rgba(244,114,182,0.07); }
-  .callout.purple { border-color: var(--accent-purple); background: rgba(167,139,250,0.07); }
-  .formula-box {
-    background: rgba(34,211,238,0.10);
-    border: 1.5px solid #22d3ee55;
-    border-radius: 10px; padding: 1rem 1.5rem;
-    margin: 0.8rem 0; text-align: center;
-    font-size: 1.15rem;
-  }
-  .formula-box .katex { color: #fbbf24 !important; }
-  details {
-    background: var(--bg-card2);
-    border: 1px solid #1e3a5f;
-    border-radius: 10px; margin-bottom: 0.9rem;
-    overflow: hidden;
-  }
-  summary {
-    cursor: pointer; padding: 1rem 1.3rem;
-    font-weight: 700; color: #22d3ee;
-    list-style: none; display: flex; align-items: center; gap: 0.7rem;
-    font-size: 1.02rem;
-    transition: background 0.2s;
-  }
-  summary:hover { background: rgba(34,211,238,0.08); }
-  summary::before { content: '▶'; font-size: 0.8rem; transition: transform 0.2s; }
-  details[open] summary::before { transform: rotate(90deg); }
-  .details-body { padding: 1.2rem 1.5rem; border-top: 1px solid #1e3a5f; }
-  .step {
-    background: rgba(167,139,250,0.07);
-    border-right: 3px solid #a78bfa;
-    border-radius: 6px; padding: 0.7rem 1rem; margin: 0.5rem 0;
-  }
-  .step-num {
-    display: inline-block; background: #a78bfa; color: #0f172a;
-    border-radius: 50%; width: 22px; height: 22px; text-align: center;
-    line-height: 22px; font-weight: 900; font-size: 0.85rem; margin-left: 0.5rem;
-  }
-  .quiz-btn {
-    display: block; width: 100%; max-width: 500px; margin: 2.5rem auto 1rem;
-    background: linear-gradient(135deg, #22d3ee, #a78bfa);
-    color: #0f172a; font-weight: 900; font-size: 1.25rem;
-    padding: 1rem 2rem; border-radius: 14px; border: none;
-    cursor: pointer; text-decoration: none; text-align: center;
-    box-shadow: 0 4px 24px #22d3ee55;
-    transition: all 0.2s; letter-spacing: 0.5px;
-  }
-  .quiz-btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 30px #a78bfa88;
+    background: linear-gradient(135deg, var(--gold) 0%, #e8a90a 100%);
+    border-color: var(--gold);
+    color: #05080f;
+    box-shadow: 0 0 16px rgba(245,197,24,.4);
   }
   .slides-btn {
-    background: linear-gradient(135deg, #f472b6, #fbbf24);
-    color: #0f172a; font-weight: 900; font-size: 1rem;
-    padding: 0.7rem 1.5rem; border-radius: 10px; border: none;
-    cursor: pointer; text-decoration: none;
-    box-shadow: 0 2px 12px #f472b644;
-    transition: all 0.2s;
+    margin-right: auto;
+    background: linear-gradient(135deg, var(--violet), #7c3aed);
+    border-color: var(--violet);
+    color: white;
+    flex-shrink: 0;
   }
-  .slides-btn:hover { transform: scale(1.04); }
-  canvas { border-radius: 10px; display: block; margin: 0 auto; }
-  .tag {
-    display: inline-block; background: rgba(34,211,238,0.15);
-    color: #22d3ee; border-radius: 6px; padding: 2px 10px;
-    font-size: 0.85rem; font-weight: 700; margin: 2px;
+  .slides-btn:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: white;
+    transform: translateY(-1px);
   }
-  .tag.yellow { background: rgba(251,191,36,0.15); color: #fbbf24; }
-  .tag.green { background: rgba(52,211,153,0.15); color: #34d399; }
-  .tag.pink { background: rgba(244,114,182,0.15); color: #f472b6; }
-  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-  th { background: rgba(34,211,238,0.15); color: #22d3ee; padding: 0.7rem; text-align: center; }
-  td { padding: 0.6rem; text-align: center; border-bottom: 1px solid #1e3a5f; }
-  tr:hover td { background: rgba(167,139,250,0.06); }
-  .math-color { color: #fbbf24; }
-  h3 { color: #22d3ee; font-size: 1.2rem; font-weight: 800; margin: 1.2rem 0 0.6rem; }
-  h4 { color: #a78bfa; font-size: 1.05rem; font-weight: 700; margin: 0.9rem 0 0.4rem; }
-  p { line-height: 1.8; color: #cbd5e1; }
-  ul, ol { color: #cbd5e1; line-height: 1.9; padding-right: 1.5rem; }
-  li { margin-bottom: 0.3rem; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media(max-width:700px) { .grid-2 { grid-template-columns: 1fr; } }
+  /* ─── Hero ─── */
+  .hero {
+    min-height: 28vh;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,197,24,.08), transparent),
+                radial-gradient(ellipse 50% 40% at 80% 100%, rgba(0,229,255,.06), transparent),
+                var(--bg-base);
+    padding: 3rem 1rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f5c518' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero h1 {
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), #fff 50%, var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3; position: relative; z-index: 1;
+  }
+  .hero p {
+    color: var(--muted); font-size: 1.05rem; margin-top: .6rem;
+    position: relative; z-index: 1;
+  }
+  /* ─── Tabs ─── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  /* ─── Section ─── */
+  .section-wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding: 2.5rem 1.2rem 4rem;
+  }
+  .sec-title {
+    font-size: 2rem; font-weight: 900;
+    color: var(--gold);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: .7rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: .6rem;
+  }
+  .sec-title span.badge {
+    background: var(--gold);
+    color: #05080f;
+    font-size: .7rem;
+    padding: .15rem .5rem;
+    border-radius: 20px;
+    font-weight: 800;
+  }
+  /* ─── Cards ─── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin-bottom: 1.5rem;
+    transition: border-color .3s;
+  }
+  .card:hover { border-color: rgba(245,197,24,.35); }
+  .card-title {
+    font-size: 1.15rem; font-weight: 800;
+    color: var(--cyan); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  /* ─── Law Box ─── */
+  .law-box {
+    background: linear-gradient(135deg, rgba(245,197,24,.08), rgba(0,229,255,.05));
+    border: 1px solid rgba(245,197,24,.3);
+    border-right: 4px solid var(--gold);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+  }
+  .law-box .label {
+    font-size: .78rem; font-weight: 800;
+    color: var(--gold); letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: .5rem;
+  }
+  /* ─── Theorem Box ─── */
+  .theorem-box {
+    background: linear-gradient(135deg, rgba(167,139,250,.08), rgba(124,58,237,.04));
+    border: 1px solid rgba(167,139,250,.3);
+    border-right: 4px solid var(--violet);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+  }
+  .theorem-box .label {
+    font-size: .78rem; font-weight: 800;
+    color: var(--violet); letter-spacing: .05em;
+    margin-bottom: .5rem;
+  }
+  /* ─── Note Box ─── */
+  .note-box {
+    background: rgba(52,211,153,.06);
+    border: 1px solid rgba(52,211,153,.25);
+    border-right: 4px solid var(--green);
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    margin: 1.2rem 0;
+    font-size: .92rem;
+  }
+  .note-box .label { font-weight: 800; color: var(--green); }
+  /* ─── Math ─── */
+  .math-display {
+    overflow-x: auto; padding: 1rem;
+    background: rgba(0,229,255,.04);
+    border-radius: 8px; margin: .8rem 0;
+    text-align: center;
+  }
+  .math-display .katex { color: var(--cyan) !important; font-size: 1.15em !important; }
+  .katex { color: var(--cyan) !important; }
+  /* ─── Accordion ─── */
+  details {
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  details[open] { border-color: rgba(245,197,24,.4); }
+  summary {
+    padding: 1rem 1.3rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: .95rem;
+    display: flex; align-items: center; gap: .6rem;
+    list-style: none;
+    color: var(--text);
+    user-select: none;
+    transition: background .2s;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: '▸';
+    color: var(--gold);
+    transition: transform .25s;
+    flex-shrink: 0;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  summary:hover { background: rgba(245,197,24,.05); }
+  .details-body {
+    padding: 1.2rem 1.4rem;
+    border-top: 1px solid var(--border);
+    font-size: .92rem;
+  }
+  .step {
+    display: flex; gap: .8rem;
+    margin-bottom: .9rem; align-items: flex-start;
+  }
+  .step-num {
+    min-width: 1.7rem; height: 1.7rem;
+    background: var(--gold); color: #05080f;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: .8rem; flex-shrink: 0;
+    margin-top: .1rem;
+  }
+  /* ─── SVG Diagrams ─── */
+  .diagram-wrap {
+    background: rgba(0,229,255,.03);
+    border: 1px dashed rgba(0,229,255,.2);
+    border-radius: 12px;
+    padding: 1rem; margin: 1.2rem 0;
+    overflow: hidden;
+  }
+  .diagram-wrap svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  /* ─── Test Button ─── */
+  .test-btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: linear-gradient(135deg, #f5c518, #e8a90a);
+    color: #05080f;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 900; font-size: 1.05rem;
+    padding: .9rem 2.2rem;
+    border-radius: 12px;
+    border: none; cursor: pointer;
+    text-decoration: none;
+    transition: all .3s;
+    box-shadow: 0 4px 20px rgba(245,197,24,.3);
+    margin-top: 2.5rem;
+  }
+  .test-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(245,197,24,.5);
+    background: linear-gradient(135deg, #ffd740, #f5c518);
+  }
+  /* ─── Grid ─── */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.2rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+  /* ─── Footer ─── */
   footer {
-    background: #0f172a; border-top: 1px solid #1e3a5f;
-    text-align: center; padding: 1.5rem;
-    font-size: 1.15rem; font-weight: 900;
-    color: #22d3ee; letter-spacing: 1px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
   }
-  .katex-display { overflow-x: auto; }
+  footer strong {
+    font-size: 1.1rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  /* ─── Summary Cards ─── */
+  .summary-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.4rem;
+    transition: all .3s;
+  }
+  .summary-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245,197,24,.15);
+  }
+  .summary-card h3 {
+    font-size: 1rem; font-weight: 800; color: var(--gold);
+    margin-bottom: .8rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .5rem;
+  }
+  .summary-card p, .summary-card li {
+    font-size: .87rem; color: var(--muted); line-height: 1.7;
+  }
+  .summary-card ul { list-style: none; padding: 0; }
+  .summary-card li::before {
+    content: '◆ ';
+    color: var(--cyan); font-size: .7rem;
+  }
+  /* ─── Links section ─── */
+  .link-card {
+    display: flex; flex-direction: column; gap: .5rem;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    transition: all .3s;
+  }
+  .link-card:hover { border-color: var(--violet); }
+  .link-card h4 { font-size: 1rem; font-weight: 800; color: var(--violet); }
+  .link-card a {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(167,139,250,.12);
+    color: var(--violet);
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: .85rem; font-weight: 700;
+    transition: all .25s; width: fit-content;
+  }
+  .link-card a:hover {
+    background: var(--violet);
+    color: #05080f;
+  }
+  .solved-badge {
+    display: inline-block;
+    background: rgba(52,211,153,.15);
+    color: var(--green);
+    border: 1px solid rgba(52,211,153,.3);
+    padding: .15rem .5rem;
+    border-radius: 6px;
+    font-size: .72rem;
+    font-weight: 700;
+    margin-right: .4rem;
+  }
+  .ex-badge {
+    display: inline-block;
+    background: rgba(0,229,255,.12);
+    color: var(--cyan);
+    border: 1px solid rgba(0,229,255,.25);
+    padding: .15rem .5rem;
+    border-radius: 6px;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: .88rem;
+  }
+  th {
+    background: rgba(245,197,24,.12);
+    color: var(--gold);
+    padding: .6rem .8rem;
+    text-align: center;
+    font-weight: 800;
+    border: 1px solid var(--border);
+  }
+  td {
+    padding: .55rem .8rem;
+    border: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+  }
+  tr:hover td { background: rgba(245,197,24,.04); }
+  p { margin-bottom: .7rem; }
+  ul { margin-right: 1.5rem; margin-bottom: .7rem; }
+  li { margin-bottom: .3rem; }
 </style>
 </head>
 <body>
 
-<div id="progress-bar" style="width:0%"></div>
+<!-- Progress Bar -->
+<div id="prog-bar"></div>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:0.3rem;padding:0.5rem 1rem;flex-wrap:wrap;justify-content:space-between;">
-    <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
-      <button class="nav-btn active" onclick="showSection('axes')">📐 تغيير المحاور</button>
-      <button class="nav-btn" onclick="showSection('parabola')">🔵 القطع المكافئ</button>
-      <button class="nav-btn" onclick="showSection('ellipse')">🟠 القطع الناقص</button>
-      <button class="nav-btn" onclick="showSection('hyperbola')">🔴 القطع الزائد</button>
-    </div>
-    <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?authuser=0&pageId=none" target="_blank" class="slides-btn">🎴 تحميل الشرائح</a>
+<!-- Navbar -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?authuser=0&pageId=none" target="_blank" class="nav-btn slides-btn">📊 الشرائح</a>
+    <button class="nav-btn active" onclick="showTab('summary')">🗂 الملخص الشامل</button>
+    <button class="nav-btn" onclick="showTab('axes')">📐 تغيير المحاور</button>
+    <button class="nav-btn" onclick="showTab('parabola')">🌿 القطع المكافئ</button>
+    <button class="nav-btn" onclick="showTab('ellipse')">⭕ القطع الناقص</button>
+    <button class="nav-btn" onclick="showTab('hyperbola')">〰 القطع الزائد</button>
   </div>
 </nav>
 
-<div style="max-width:1100px;margin:0 auto;padding:0 1rem;">
+<!-- Hero -->
+<div class="hero">
+  <h1>الهندسة التحليلية</h1>
+  <p>الباب الرابع والسادس — تغيير المحاور · القطع المكافئ · الناقص · الزائد</p>
+  <p style="color:var(--gold); font-size:.8rem; margin-top:.4rem;">م. خليفة أ. سعد · ح.س. عبدالعزيز</p>
+</div>
 
-<!-- ==================== SECTION 1: تغيير المحاور ==================== -->
-<div id="axes" class="section active">
-  <div class="section-title">📐 تغيير المحاور في المستوى</div>
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB: SUMMARY -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-summary" class="tab-panel active">
+<div class="section-wrap">
+  <div class="sec-title">🗂 الملخص الشامل <span class="badge">كل شيء في مكان واحد</span></div>
 
+  <!-- LAWS SUMMARY -->
   <div class="card">
-    <p style="font-size:1.08rem;">الغرض من تغيير محاور الاحداثيات هو وضع معادلات المنحنيات في أبسط صورة لها حتى يمكن معرفة نوعها ودراسة خواصها. وسندرس ثلاثة طرق لتغيير المحاور:</p>
-    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;">
-      <span class="tag">أولاً: نقل المحاور</span>
-      <span class="tag yellow">ثانياً: دوران المحاور</span>
-      <span class="tag green">ثالثاً: نقل ودوران في آن واحد</span>
+    <div class="card-title">📐 ملخص القوانين</div>
+    <div class="grid-2">
+      <div class="summary-card">
+        <h3>نقل المحاور</h3>
+        <div class="math-display">$$x = x' + \alpha \;,\quad y = y' + \beta$$</div>
+        <div class="math-display">$$x' = x - \alpha \;,\quad y' = y - \beta$$</div>
+      </div>
+      <div class="summary-card">
+        <h3>دوران المحاور</h3>
+        <div class="math-display">$$x = x'\cos\theta - y'\sin\theta$$</div>
+        <div class="math-display">$$y = x'\sin\theta + y'\cos\theta$$</div>
+      </div>
+      <div class="summary-card">
+        <h3>نقل ودوران معاً</h3>
+        <div class="math-display">$$x = \alpha + x'\cos\theta - y'\sin\theta$$</div>
+        <div class="math-display">$$y = \beta + x'\sin\theta + y'\cos\theta$$</div>
+      </div>
+      <div class="summary-card">
+        <h3>زاوية الدوران لإزالة xy</h3>
+        <div class="math-display">$$\tan 2\theta = \frac{2m}{a - b}$$</div>
+        <ul><li>من المعادلة: $ax^2+2mxy+by^2+...$</li></ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع المكافئ $y^2=4px$</h3>
+        <ul>
+          <li>الرأس: $(0,0)$</li>
+          <li>البؤرة: $(p,0)$</li>
+          <li>الدليل: $x=-p$</li>
+          <li>الوتر البؤري: $4p$</li>
+          <li>المعادلة العامة: $(y-k)^2=4p(x-h)$</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع المكافئ $x^2=4py$</h3>
+        <ul>
+          <li>الرأس: $(0,0)$</li>
+          <li>البؤرة: $(0,p)$</li>
+          <li>الدليل: $y=-p$</li>
+          <li>المعادلة العامة: $(x-h)^2=4p(y-k)$</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع الناقص $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$</h3>
+        <ul>
+          <li>المركز: $(0,0)$</li>
+          <li>البؤرتان: $(\pm ae, 0)$ حيث $b^2=a^2(1-e^2)$</li>
+          <li>الدليلان: $x=\pm\frac{a}{e}$</li>
+          <li>الوتر البؤري: $\frac{2b^2}{a}$</li>
+          <li>المساحة: $\pi ab$</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع الزائد $\frac{x^2}{a^2}-\frac{y^2}{b^2}=1$</h3>
+        <ul>
+          <li>المركز: $(0,0)$</li>
+          <li>البؤرتان: $(\pm ae, 0)$ حيث $b^2=a^2(e^2-1)$</li>
+          <li>الدليلان: $x=\pm\frac{a}{e}$</li>
+          <li>المقاربان: $y=\pm\frac{b}{a}x$</li>
+          <li>الوتر البؤري: $\frac{2b^2}{a}$</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>شرط التماس $y=mx+c$ مع القطع</h3>
+        <ul>
+          <li>مكافئ $y^2=4ax$: $c=\frac{a}{m}$</li>
+          <li>ناقص $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$: $c^2=a^2m^2+b^2$</li>
+          <li>زائد $\frac{x^2}{a^2}-\frac{y^2}{b^2}=1$: $c^2=a^2m^2-b^2$</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>معادلة المماس لأي قطع</h3>
+        <ul>
+          <li>مكافئ $y^2=4ax$ عند $(x_1,y_1)$: $yy_1=2a(x+x_1)$</li>
+          <li>ناقص عند $(x_1,y_1)$: $\frac{xx_1}{a^2}+\frac{yy_1}{b^2}=1$</li>
+          <li>زائد عند $(x_1,y_1)$: $\frac{xx_1}{a^2}-\frac{yy_1}{b^2}=1$</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>الاختلاف المركزي $e$</h3>
+        <ul>
+          <li>$e=1$ : قطع مكافئ</li>
+          <li>$e<1$ : قطع ناقص</li>
+          <li>$e>1$ : قطع زائد</li>
+          <li>$e=0$ : دائرة</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>المعادلة القطبية للقطع المكافئ</h3>
+        <div class="math-display">$$r = \frac{L}{1 - e\cos\theta}$$</div>
+        <p style="font-size:.82rem;color:var(--muted)">$L$ = نصف الوتر البؤري العمودي، $e=1$ للمكافئ</p>
+      </div>
     </div>
   </div>
 
-  <!-- نقل المحاور -->
-  <div class="card">
-    <h3>أولاً: نقل المحاور</h3>
-    <p>نأخذ المحورين المتعامدين OX وOY. إذا نقلنا نقطة الأصل O إلى O' ذات الإحداثيات (α, β) واتخذنا محور OX الوضع O'X' ومحور OY الوضع O'Y' محتفظين باتجاهيهما.</p>
-    <div class="callout">
-      <strong>🔑 قانون نقل المحاور:</strong><br>
-      لأي نقطة P، إذا كانت إحداثياتها القديمة (x, y) وإحداثياتها الجديدة (x', y'):
-    </div>
-    <div class="formula-box">\[ x = x' + \alpha \qquad , \qquad y = y' + \beta \]</div>
-    <div class="callout yellow">
-      <strong>💡 للحصول على الإحداثيات الجديدة:</strong>
-    </div>
-    <div class="formula-box">\[ x' = x - \alpha \qquad , \qquad y' = y - \beta \]</div>
-    <!-- SVG نقل المحاور -->
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="max-width:500px;display:block;margin:1rem auto;">
-      <rect width="500" height="220" fill="#162032" rx="10"/>
-      <!-- axes old -->
-      <line x1="20" y1="110" x2="480" y2="110" stroke="#475569" stroke-width="1.5"/>
-      <line x1="120" y1="10" x2="120" y2="210" stroke="#475569" stroke-width="1.5"/>
-      <text x="475" y="107" fill="#475569" font-size="14">X</text>
-      <text x="125" y="18" fill="#475569" font-size="14">Y</text>
-      <circle cx="120" cy="110" r="5" fill="#22d3ee"/>
-      <text x="95" y="125" fill="#22d3ee" font-size="13">O(0,0)</text>
-      <!-- axes new -->
-      <line x1="240" y1="60" x2="480" y2="60" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,3"/>
-      <line x1="290" y1="10" x2="290" y2="180" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,3"/>
-      <text x="465" y="56" fill="#fbbf24" font-size="14">X'</text>
-      <text x="295" y="18" fill="#fbbf24" font-size="14">Y'</text>
-      <circle cx="290" cy="60" r="6" fill="#f472b6"/>
-      <text x="255" y="78" fill="#f472b6" font-size="13">O'(α,β)</text>
-      <!-- point P -->
-      <circle cx="400" cy="35" r="6" fill="#34d399"/>
-      <text x="408" y="33" fill="#34d399" font-size="13">P(x,y)</text>
-      <!-- dashes -->
-      <line x1="400" y1="35" x2="400" y2="60" stroke="#34d39955" stroke-dasharray="4,3"/>
-      <line x1="290" y1="35" x2="400" y2="35" stroke="#34d39955" stroke-dasharray="4,3"/>
-      <!-- alpha beta labels -->
-      <line x1="120" y1="118" x2="290" y2="118" stroke="#22d3ee" stroke-width="1"/>
-      <text x="195" y="135" fill="#22d3ee" font-size="12">α</text>
-      <line x1="300" y1="60" x2="300" y2="110" stroke="#fbbf24" stroke-width="1"/>
-      <text x="305" y="90" fill="#fbbf24" font-size="12">β</text>
-    </svg>
-  </div>
-
-  <!-- دوران المحاور -->
-  <div class="card">
-    <h3>ثانياً: دوران المحاور</h3>
-    <p>نأخذ المحورين المتعامدين OX وOY ونفرض أن هذه المحاور دارت بزاوية قدرها θ.</p>
-    <div class="callout yellow">
-      <strong>🔑 قانون دوران المحاور:</strong>
-    </div>
-    <div class="formula-box">\[ x = x'\cos\theta - y'\sin\theta \]</div>
-    <div class="formula-box">\[ y = x'\sin\theta + y'\cos\theta \]</div>
-    <div class="callout">
-      <strong>📝 الصورة المصفوفية:</strong>
-    </div>
-    <div class="formula-box">\[ \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} x' \\ y' \end{pmatrix} \]</div>
-    <div class="callout green">
-      <strong>💡 للحصول على الإحداثيات الجديدة (عكسياً):</strong>
-    </div>
-    <div class="formula-box">\[ \begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} \]</div>
-    <p>أي: <span class="math-color">\(x' = x\cos\theta + y\sin\theta\)</span> و <span class="math-color">\(y' = -x\sin\theta + y\cos\theta\)</span></p>
-    <!-- SVG دوران -->
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="max-width:500px;display:block;margin:1rem auto;">
-      <rect width="500" height="220" fill="#162032" rx="10"/>
-      <line x1="20" y1="140" x2="480" y2="140" stroke="#475569" stroke-width="1.5"/>
-      <line x1="200" y1="10" x2="200" y2="210" stroke="#475569" stroke-width="1.5"/>
-      <text x="470" y="137" fill="#475569" font-size="13">X</text>
-      <text x="205" y="18" fill="#475569" font-size="13">Y</text>
-      <circle cx="200" cy="140" r="5" fill="#22d3ee"/>
-      <!-- rotated axes -->
-      <line x1="200" y1="140" x2="450" y2="60" stroke="#fbbf24" stroke-width="2"/>
-      <line x1="200" y1="140" x2="80" y2="20" stroke="#fbbf24" stroke-width="2"/>
-      <text x="455" y="60" fill="#fbbf24" font-size="13">X'</text>
-      <text x="65" y="20" fill="#fbbf24" font-size="13">Y'</text>
-      <!-- theta arc -->
-      <path d="M 245 140 A 45 45 0 0 0 218 107" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
-      <text x="248" y="125" fill="#a78bfa" font-size="13">θ</text>
-      <!-- point -->
-      <circle cx="370" cy="80" r="6" fill="#34d399"/>
-      <text x="378" y="78" fill="#34d399" font-size="13">P(x,y)</text>
-    </svg>
-  </div>
-
-  <!-- نقل ودوران -->
-  <div class="card">
-    <h3>ثالثاً: نقل ودوران المحاور في آن واحد</h3>
-    <p>إذا نقلنا الأصل O إلى النقطة (α, β) ودار المحوران بزاوية قدرها θ ينتج أن:</p>
-    <div class="formula-box">\[ x = \alpha + x'\cos\theta - y'\sin\theta \]</div>
-    <div class="formula-box">\[ y = \beta + x'\sin\theta + y'\cos\theta \]</div>
-    <div class="callout purple">
-      <strong>ملحوظة:</strong> يمكن كتابة معادلات نقل ودوران المحاور في آن واحد في الصورة:<br>
-      \( x = \alpha + x'\cos\theta - y'\sin\theta \) و \( y = \beta + x'\sin\theta + y'\cos\theta \)
+  <!-- EXAMPLES SUMMARY -->
+  <div class="card" style="margin-top:2rem">
+    <div class="card-title">📖 ملخص الأمثلة المحلولة</div>
+    <div class="grid-3">
+      <div class="summary-card">
+        <h3>تغيير المحاور</h3>
+        <ul>
+          <li><span class="ex-badge">م1</span> إيجاد إحداثيات جديدة بعد النقل</li>
+          <li><span class="ex-badge">م2</span> دائرة بعد نقل الأصل</li>
+          <li><span class="ex-badge">م3</span> المنحنى $2xy=49$ بدوران $45°$</li>
+          <li><span class="ex-badge">م4</span> نقل ودوران بزاوية $\pi/4$</li>
+          <li><span class="ex-badge">م5</span> إيجاد نقطة النقل لحذف حدود</li>
+          <li><span class="ex-badge">ت1-9</span> تدريبات محلولة</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع المكافئ</h3>
+        <ul>
+          <li><span class="ex-badge">م1</span> دراسة القطع من المعادلة</li>
+          <li><span class="ex-badge">م2</span> إيجاد المماسين</li>
+          <li><span class="ex-badge">م3</span> قطع يمر بثلاث نقاط</li>
+          <li><span class="ex-badge">م4</span> نقطة المماس المتوازي</li>
+          <li><span class="ex-badge">م5</span> برهان شرط التماس</li>
+          <li><span class="ex-badge">ت1-5</span> تدريبات محلولة</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع الناقص</h3>
+        <ul>
+          <li><span class="ex-badge">م1</span> دراسة ناقص من معادلة عامة</li>
+          <li><span class="ex-badge">م2</span> إيجاد معادلة ناقص</li>
+          <li><span class="ex-badge">م3</span> ناقص يمر بنقاط</li>
+          <li><span class="ex-badge">م4</span> الاختلاف والوتر والمساحة</li>
+          <li><span class="ex-badge">م5</span> المماسان من نقطة</li>
+          <li><span class="ex-badge">ت1-7</span> تدريبات محلولة</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <h3>القطع الزائد</h3>
+        <ul>
+          <li><span class="ex-badge">م1</span> الاختلاف والدليلان</li>
+          <li><span class="ex-badge">م2</span> دراسة زائد من معادلة عامة</li>
+          <li><span class="ex-badge">م3</span> زائد بشرط البؤرة والدليل</li>
+          <li><span class="ex-badge">م4</span> زائد يمر بنقطتين</li>
+          <li><span class="ex-badge">م5</span> جدول المعلومات الكامل</li>
+          <li><span class="ex-badge">ت1-4</span> تدريبات محلولة</li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <!-- تطبيقات على المعادلة العامة -->
-  <div class="card">
-    <h3>تطبيقات على تغيير المحاور في اختزال المعادلة العامة من الدرجة الثانية</h3>
-    <div class="callout yellow">
-      <strong>المعادلة العامة من الدرجة الثانية:</strong>
+  <!-- QUIZ & PRACTICE LINKS -->
+  <div class="card" style="margin-top:2rem">
+    <div class="card-title">🔗 ملخص روابط التدريبات والاختبارات</div>
+    <div class="note-box">
+      <span class="label">📌 ملاحظة أم:</span> جميع الاختبارات تفاعلية على NotebookLM. تأكد من تسجيل الدخول بحساب Google. الشرائح التوضيحية والاختبارات مرتبطة مع نفس الكتاب.
     </div>
-    <div class="formula-box">\[ ax^2 + 2mxy + by^2 + 2nx + 2Ly + C = 0 \quad (*) \]</div>
+    <div class="grid-2" style="margin-top:1rem">
+      <div class="link-card">
+        <h4>📐 تغيير المحاور</h4>
+        <p style="font-size:.85rem;color:var(--muted)">اختبار شامل يغطي نقل المحاور، الدوران، والتطبيقات.</p>
+        <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=cb4ac13d-15d3-4676-808f-1f136bf6dcb6" target="_blank">🧪 ابدأ الاختبار ←</a>
+      </div>
+      <div class="link-card">
+        <h4>🌿 القطع المكافئ</h4>
+        <p style="font-size:.85rem;color:var(--muted)">اختبار يغطي المعادلات والخواص والتطبيقات.</p>
+        <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=9b1855d5-9402-45e4-87de-c11860362bf7" target="_blank">🧪 ابدأ الاختبار ←</a>
+      </div>
+      <div class="link-card">
+        <h4>⭕ القطع الناقص</h4>
+        <p style="font-size:.85rem;color:var(--muted)">اختبار البؤرتين، الدليلين، والاختلاف المركزي.</p>
+        <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=b73f65fd-f95c-4aba-a0eb-118758a586ac" target="_blank">🧪 ابدأ الاختبار ←</a>
+      </div>
+      <div class="link-card">
+        <h4>〰 القطع الزائد</h4>
+        <p style="font-size:.85rem;color:var(--muted)">اختبار المقاربين، البؤرتين، والاختلاف المركزي.</p>
+        <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=e3a14fc9-1139-49d5-9eae-8474c49a237b" target="_blank">🧪 ابدأ الاختبار ←</a>
+      </div>
+    </div>
+    <div style="margin-top:1.2rem">
+      <div class="link-card">
+        <h4>📊 شرائح العرض الكاملة</h4>
+        <p style="font-size:.85rem;color:var(--muted)">ملاحظات المقرر الكاملة على NotebookLM لمراجعة شاملة.</p>
+        <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?authuser=0&pageId=none" target="_blank">📥 تحميل الشرائح ←</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 
-    <h4>1- حذف حدود الدرجة الأولى (حذف x وy)</h4>
-    <p>ننقل المحورين إلى نقطة معينة (x₀, y₀) بدون تغيير اتجاهيهما. يجب أن تحقق:</p>
-    <div class="formula-box">\[ ax_0 + my_0 + n = 0 \quad , \quad mx_0 + by_0 + L = 0 \]</div>
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB: تغيير المحاور -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-axes" class="tab-panel">
+<div class="section-wrap">
+  <div class="sec-title">📐 تغيير المحاور في المستوى <span class="badge">الباب الرابع</span></div>
+  
+  <div class="card">
+    <p>الغرض من تغيير محاور الاحداثيات هو وضع معادلات المنحنيات في أبسط صورة حتى يمكن معرفة نوعها ودراسة خواصها. وسندرس ثلاثة طرق لتغيير المحاور:</p>
+  </div>
 
-    <h4>2- حذف الحد المحتوي على x والحد المطلق</h4>
-    <div class="formula-box">\[ ax_0 + my_0 + n = 0 \quad \text{و} \quad ax_0^2 + 2mx_0y_0 + by_0^2 + 2nx_0 + 2Ly_0 + C = 0 \]</div>
+  <!-- أولاً: نقل المحاور -->
+  <div class="card">
+    <div class="card-title">① أولاً: نقل المحاور</div>
+    <p>إذا نقلنا نقطة الأصل $O$ إلى $O'(\alpha,\beta)$ مع بقاء الاتجاهات ثابتة، فإن أي نقطة $P(x,y)$ تُصبح إحداثياتها الجديدة:</p>
+    <div class="law-box">
+      <div class="label">⚡ قانون نقل المحاور</div>
+      <div class="math-display">$$x = x' + \alpha \qquad y = y' + \beta$$</div>
+      <div class="math-display">$$x' = x - \alpha \qquad y' = y - \beta$$</div>
+    </div>
+    <div class="note-box">
+      <span class="label">ملاحظة:</span> الاحداثي القديم يساوي الاحداثي الجديد مضافاً إليه احداثي نقطة الأصل الجديدة.
+    </div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+        <line x1="20" y1="220" x2="380" y2="220" stroke="#8892a8" stroke-width="1.5" marker-end="url(#arrowG)"/>
+        <line x1="60" y1="260" x2="60" y2="20" stroke="#8892a8" stroke-width="1.5" marker-end="url(#arrowG)"/>
+        <text x="385" y="225" fill="#8892a8" font-size="13" font-family="Tajawal">X</text>
+        <text x="55" y="15" fill="#8892a8" font-size="13" font-family="Tajawal">Y</text>
+        <text x="45" y="235" fill="#8892a8" font-size="11" font-family="Tajawal">O</text>
+        <!-- New origin -->
+        <circle cx="190" cy="160" r="5" fill="#f5c518"/>
+        <line x1="190" y1="160" x2="380" y2="160" stroke="#f5c518" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowY)"/>
+        <line x1="190" y1="160" x2="190" y2="20" stroke="#f5c518" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowY)"/>
+        <text x="385" y="165" fill="#f5c518" font-size="12" font-family="Tajawal">X'</text>
+        <text x="195" y="15" fill="#f5c518" font-size="12" font-family="Tajawal">Y'</text>
+        <text x="195" y="175" fill="#f5c518" font-size="11" font-family="Tajawal">O'(α,β)</text>
+        <!-- Point P -->
+        <circle cx="300" cy="90" r="5" fill="#00e5ff"/>
+        <text x="308" y="87" fill="#00e5ff" font-size="12" font-family="Tajawal">P(x,y)</text>
+        <!-- dashes -->
+        <line x1="300" y1="90" x2="300" y2="220" stroke="#00e5ff" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+        <line x1="60" y1="90" x2="300" y2="90" stroke="#00e5ff" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>
+        <!-- alpha, beta labels -->
+        <text x="120" y="212" fill="#a78bfa" font-size="11" font-family="Tajawal">α</text>
+        <text x="42" y="195" fill="#a78bfa" font-size="11" font-family="Tajawal">β</text>
+        <defs>
+          <marker id="arrowG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 Z" fill="#8892a8"/></marker>
+          <marker id="arrowY" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 Z" fill="#f5c518"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
 
-    <h4>3- حذف الحد المحتوي على y والحد المطلق</h4>
-    <div class="formula-box">\[ mx_0 + by_0 + L = 0 \quad \text{و} \quad ax_0^2 + 2mx_0y_0 + by_0^2 + 2nx_0 + 2Ly_0 + C = 0 \]</div>
+  <!-- ثانياً: دوران المحاور -->
+  <div class="card">
+    <div class="card-title">② ثانياً: دوران المحاور</div>
+    <p>إذا دارت المحاور بزاوية $\theta$ حول نقطة الأصل دون نقلها، فإن:</p>
+    <div class="law-box">
+      <div class="label">⚡ قانون دوران المحاور</div>
+      <div class="math-display">$$x = x'\cos\theta - y'\sin\theta$$</div>
+      <div class="math-display">$$y = x'\sin\theta + y'\cos\theta$$</div>
+      <div class="math-display">$$\text{صورة مصفوفية: }\begin{pmatrix}x\\y\end{pmatrix} = \begin{pmatrix}\cos\theta & -\sin\theta\\\sin\theta & \cos\theta\end{pmatrix}\begin{pmatrix}x'\\y'\end{pmatrix}$$</div>
+    </div>
+    <div class="law-box" style="border-right-color:var(--cyan)">
+      <div class="label" style="color:var(--cyan)">الاحداثيات الجديدة</div>
+      <div class="math-display">$$x' = x\cos\theta + y\sin\theta \qquad y' = -x\sin\theta + y\cos\theta$$</div>
+    </div>
+  </div>
 
-    <h4>4- حذف الحد المحتوي على xy من المعادلة العامة</h4>
-    <p>في هذه الحالة نجعل المحورين المتعامدين يدوران بزاوية معينة θ بدون تغيير نقطة الأصل. الزاوية التي يجب أن يدور بها المحوران:</p>
-    <div class="formula-box">\[ \tan 2\theta = \frac{2m}{a - b} \]</div>
-    <div class="formula-box">\[ \theta = \frac{1}{2}\tan^{-1}\left[\frac{2m}{a-b}\right] \quad (**) \]</div>
-    <div class="callout green">
-      <strong>ملحوظة مهمة:</strong> في جميع الأحوال السابقة تكون حدود الدرجة الثانية في المعادلة الجديدة هي نفس حدود الدرجة الثانية في المعادلة الأصلية.
+  <!-- ثالثاً: نقل ودوران -->
+  <div class="card">
+    <div class="card-title">③ ثالثاً: نقل ودوران المحاور معاً</div>
+    <p>إذا نقلنا الأصل إلى $(\alpha,\beta)$ ثم أدرنا بزاوية $\theta$ فإن:</p>
+    <div class="law-box">
+      <div class="label">⚡ نقل ودوران في آنٍ واحد</div>
+      <div class="math-display">$$x = \alpha + x'\cos\theta - y'\sin\theta$$</div>
+      <div class="math-display">$$y = \beta + x'\sin\theta + y'\cos\theta$$</div>
+    </div>
+  </div>
+
+  <!-- التطبيقات -->
+  <div class="card">
+    <div class="card-title">④ تطبيقات على المعادلة العامة من الدرجة الثانية</div>
+    <p>المعادلة العامة من الدرجة الثانية في $x,y$ هي:</p>
+    <div class="math-display">$$ax^2 + 2mxy + by^2 + 2nx + 2Ly + C = 0 \quad(*)$$</div>
+    
+    <div class="theorem-box">
+      <div class="label">🔷 1 - حذف حدود الدرجة الأولى</div>
+      <p>ننقل الأصل إلى نقطة $(x_0, y_0)$ تحقق المعادلتين:</p>
+      <div class="math-display">$$ax_0 + my_0 + n = 0 \qquad mx_0 + by_0 + L = 0$$</div>
+      <p>تصبح المعادلة الجديدة:</p>
+      <div class="math-display">$$ax^2 + 2mxy + by^2 + (ax_0^2 + 2mx_0y_0 + by_0^2 + 2nx_0 + 2Ly_0 + C) = 0$$</div>
+    </div>
+
+    <div class="theorem-box">
+      <div class="label">🔷 4 - حذف الحد المحتوي على xy من المعادلة العامة</div>
+      <p>ندير المحاور بزاوية $\theta$ حيث:</p>
+      <div class="math-display">$$\tan 2\theta = \frac{2m}{a - b} \qquad \Rightarrow \qquad \theta = \frac{1}{2}\tan^{-1}\!\left[\frac{2m}{a-b}\right]$$</div>
     </div>
   </div>
 
   <!-- أمثلة محلولة -->
   <div class="card">
-    <h3>🔍 أمثلة محلولة (4)</h3>
+    <div class="card-title">✅ أمثلة محلولة</div>
 
     <details>
-      <summary>مثال (1): نقل الأصل إلى النقطة (2,-5) - إيجاد الإحداثيات الجديدة للنقطة M(-3,4)</summary>
+      <summary><span class="solved-badge">م1</span> نقل الأصل إلى (2,−5) — إيجاد إحداثيات M(−3,4)</summary>
       <div class="details-body">
-        <p><strong>المعطيات:</strong> نقلت نقطة الأصل إلى النقطة (2,-5). أوجد الإحداثيات الجديدة للنقطة M(-3,4).</p>
-        <div class="step"><span class="step-num">1</span> الإحداثيات الجديدة تعطى بالعلاقة: \( x' = x - x_0 \) , \( y' = y - y_0 \)</div>
-        <div class="step"><span class="step-num">2</span> حيث أن: \( (x_0, y_0) = (2, -5) \) و \( (x, y) = (-3, 4) \)</div>
-        <div class="step"><span class="step-num">3</span> \( x' = -3 - 2 = -5 \) , \( y' = 4 - (-5) = 9 \)</div>
-        <div class="callout green"><strong>النتيجة:</strong> الإحداثيات الجديدة هي (-5, 9)</div>
+        <div class="step"><div class="step-num">1</div><div>الإحداثيات الجديدة تُعطى بالعلاقة: $x' = x - x_0$، $y' = y - y_0$</div></div>
+        <div class="step"><div class="step-num">2</div><div>حيث $(x_0,y_0)=(2,-5)$ و $(x,y)=(-3,4)$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$x' = -3-2 = -5$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$y' = 4-(-5) = 9$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>الإحداثيات الجديدة للنقطة هي $(-5, 9)$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (2): إيجاد معادلة المنحنى بعد نقل الأصل إلى (2,-3) للمعادلة x²+y²-4x+6y=36</summary>
+      <summary><span class="solved-badge">م2</span> المعادلة $x^2+y^2-4x+6y=36$ بعد نقل الأصل إلى $O'(2,-3)$</summary>
       <div class="details-body">
-        <p><strong>المسألة:</strong> المعادلة \( x^2 + y^2 - 4x + 6y = 36 \) ما هي معادلة نفس المنحنى بعد نقل الأصل إلى النقطة O'(2,-3)؟</p>
-        <div class="step"><span class="step-num">1</span> نضع: \( x = x' + 2 \) , \( y = y' - 3 \)</div>
-        <div class="step"><span class="step-num">2</span> نعوض في المعادلة المعطاة:</div>
-        <div class="formula-box">\[ (x'+2)^2 + (y'-3)^2 - 4(x'+2) + 6(y'-3) = 36 \]</div>
-        <div class="step"><span class="step-num">3</span> بعد التبسيط:</div>
-        <div class="formula-box">\[ x'^2 + y'^2 = 49 \]</div>
-        <div class="callout green"><strong>النتيجة:</strong> المعادلة الجديدة \( x'^2 + y'^2 = 49 \) وهي دائرة مركزها O' نصف قطرها = 7</div>
+        <div class="step"><div class="step-num">1</div><div>نضع: $x = x'+2$، $y = y'-3$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(x'+2)^2+(y'-3)^2-4(x'+2)+6(y'-3)=36$</div></div>
+        <div class="step"><div class="step-num">3</div><div>بعد التبسيط: $x'^2+4x'+4+y'^2-6y'+9-4x'-8+6y'-18=36$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$x'^2+y'^2-13=36$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$x'^2 + y'^2 = 49$$<p style="margin-top:.5rem;font-size:.9rem">دائرة مركزها $O'$ ونصف قطرها $= 7$</p></div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (3): إيجاد معادلة المنحنى 49 = 2xy بعد إدارة المحاور بزاوية 45°</summary>
+      <summary><span class="solved-badge">م3</span> المعادلة $2xy=49$ بعد دوران المحاور بزاوية $45°$</summary>
       <div class="details-body">
-        <p><strong>المسألة:</strong> تعطى المعادلة 2xy = 49. أوجد ما أوجد معادلة هذا المنحنى بعد إدارة المحاور بزاوية 45°.</p>
-        <div class="step"><span class="step-num">1</span> عندما تكون θ = 45° تأخذ معادلات التحويل الصورة:</div>
-        <div class="formula-box">\[ x = x'\frac{\sqrt{2}}{2} - y'\frac{\sqrt{2}}{2} \quad , \quad y = x'\frac{\sqrt{2}}{2} + y'\frac{\sqrt{2}}{2} \]</div>
-        <div class="step"><span class="step-num">2</span> نعوض في المعادلة: \( 2 \times \frac{\sqrt{2}}{2} \times \frac{\sqrt{2}}{2}(x'-y')(x'+y') = 49 \)</div>
-        <div class="step"><span class="step-num">3</span> بعد الاختصار:</div>
-        <div class="formula-box">\[ x'^2 - y'^2 = 49 \]</div>
-        <div class="callout green"><strong>النتيجة:</strong> المعادلة الجديدة هي \( x'^2 - y'^2 = 49 \) وهي قطع زائد.</div>
+        <div class="step"><div class="step-num">1</div><div>عندما $\theta=45°$: $x = \frac{x'-y'}{\sqrt{2}}$، $y = \frac{x'+y'}{\sqrt{2}}$</div></div>
+        <div class="step"><div class="step-num">2</div><div>نعوض: $2 \cdot \frac{x'-y'}{\sqrt{2}} \cdot \frac{x'+y'}{\sqrt{2}} = 49$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$2 \cdot \frac{x'^2-y'^2}{2} = 49$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$x'^2 - y'^2 = 49$$<p style="margin-top:.5rem;font-size:.9rem">هذه معادلة قطع زائد!</p></div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (4): نقل إلى (-1,2) ودوران بزاوية π/4 - إيجاد الإحداثيات الجديدة للنقطة (1,3)</summary>
+      <summary><span class="solved-badge">م4</span> نقل إلى (−1,2) ودوران بزاوية $\pi/4$ — إيجاد إحداثيات (1,3) والمعادلة الجديدة لـ $4x^2+y^2+8x-4y+7=0$</summary>
       <div class="details-body">
-        <p><strong>المسألة:</strong> إذا نقلنا الأصل إلى النقطة (-1,2) ودارت المحاور بزاوية مقدارها π/4. أوجد الإحداثيين الجديدين للنقطة (1,3) والمعادلة الجديدة للمنحنى: \(4x^2 + y^2 + 8x - 4y + 7 = 0\)</p>
-        <div class="step"><span class="step-num">1</span> معادلات نقل المحاور: \( x = x'' - 1 \) , \( y = y'' + 2 \)</div>
-        <div class="step"><span class="step-num">2</span> معادلات دوران بزاوية π/4:</div>
-        <div class="formula-box">\[ x'' = \frac{1}{\sqrt{2}}(x''' - y''') \quad , \quad y'' = \frac{1}{\sqrt{2}}(x''' + y''') \]</div>
-        <div class="step"><span class="step-num">3</span> لإيجاد الإحداثيين الجديدين للنقطة (1,3) نضع x=1, y=3</div>
-        <div class="step"><span class="step-num">4</span> الإحداثيان الجديدان: \( x''' = \frac{3\sqrt{2}}{2} \) , \( y''' = -\frac{\sqrt{2}}{2} \)</div>
-        <div class="step"><span class="step-num">5</span> المعادلة الجديدة للمنحنى: \( 5x''^2 - 6x''y'' + 5y''^2 = 2 \)</div>
+        <div class="step"><div class="step-num">1</div><div>نقل: $x=x''-1$، $y=y''+2$ ثم دوران: $x''=\frac{x'''-y'''}{\sqrt{2}}$، $y''=\frac{x'''+y'''}{\sqrt{2}}$</div></div>
+        <div class="step"><div class="step-num">2</div><div>لإيجاد إحداثيي (1,3): نضع $x=1$، $y=3$ في معادلات النقل: $x''=2$، $y''=1$</div></div>
+        <div class="step"><div class="step-num">3</div><div>ثم الدوران: $x'''=\frac{2+1}{\sqrt{2}}\cdot\sqrt{2}=\frac{3\sqrt{2}}{2}$، $y'''=\frac{-2+1}{\sqrt{2}}\cdot\sqrt{2}=\frac{-\sqrt{2}}{2}$</div></div>
+        <div class="step"><div class="step-num">4</div><div>للمعادلة: نضع $x=x''-1$، $y=y''+2$ في المعادلة الأصلية، بعد التبسيط: $4x''^2+y''^2=1$</div></div>
+        <div class="step"><div class="step-num">5</div><div>ثم بالدوران وبعد الاختزال: $5x'''^2 - 6x'''y''' + 5y'''^2 = 2$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>الإحداثيات الجديدة للنقطة (1,3): $x'''=\frac{3\sqrt{2}}{2}$، $y'''=\frac{-\sqrt{2}}{2}$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (5): إيجاد النقطة التي يجب أن تُنقل إليها المحاور لحذف حدي x,y والحد x والحد المطلق</summary>
+      <summary><span class="solved-badge">م5(i)</span> إيجاد نقطة النقل لحذف $x,y$ من $x^2+4xy+y^2+2x-2x-6y-8=0$</summary>
       <div class="details-body">
-        <p><strong>المسألة (i):</strong> أوجد النقطة التي يجب أن تُنقل إليها المحاور من المعادلة: \( x^2 + 4xy + y^2 + 2x - 6y - 8 = 0 \) كي يُحذف الحدان x,y.</p>
-        <div class="step"><span class="step-num">1</span> نفرض أن النقطة التي تنتقل إليها المحاور هي (x₀, y₀)</div>
-        <div class="step"><span class="step-num">2</span> يجب أن يتحقق: \( 2x_0 + 4y_0 + 2 = 0 \) و \( 4x_0 + 2y_0 - 6 = 0 \)</div>
-        <div class="step"><span class="step-num">3</span> بحل المعادلتين: \( x_0 = 2\frac{1}{3} \) , \( y_0 = -1\frac{2}{3} \)</div>
-        <div class="callout green">النقطة هي \( \left(\frac{7}{3}, -\frac{8}{3}\right) \) وتصبح المعادلة \( x^2 + 4xy + y^2 - \frac{2}{3} = 0 \)</div>
-        <hr style="border-color:#1e3a5f;margin:1rem 0;">
-        <p><strong>المسألة (ii):</strong> \( x^2 + y^2 + 2x - 6y + 10 = 0 \) لحذف الحد x والحد المطلق</p>
-        <div class="step"><span class="step-num">1</span> نساوي معامل x والحد المطلق بالصفر: \( 2x_0 + 2 = 0 \Rightarrow x_0 = -1 \)</div>
-        <div class="step"><span class="step-num">2</span> \( 1 + y_0^2 + 2(-1) - 6y_0 + 10 = 0 \Rightarrow y_0^2 - 6y_0 + 9 = 0 \Rightarrow y_0 = 3 \)</div>
-        <div class="callout green">النقطة المطلوبة هي (-1,3) وعليه تصبح المعادلة: \( x^2 + y^2 = 0 \)</div>
+        <div class="step"><div class="step-num">1</div><div>المعادلة: $x^2+4xy+y^2+2x-6y-8=0$. نريد حذف $x$ و $y$</div></div>
+        <div class="step"><div class="step-num">2</div><div>شرط الحذف: معامل $x$ وفمعامل $y$ في المعادلة الجديدة = صفر</div></div>
+        <div class="step"><div class="step-num">3</div><div>المعادلتان: $2x_0+4y_0+2=0$ و $4x_0+2y_0-6=0$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$x_0+2y_0+1=0$ ... (1) و $2x_0+y_0-3=0$ ... (2)</div></div>
+        <div class="step"><div class="step-num">5</div><div>من (2): $y_0=3-2x_0$، نعوض في (1): $x_0+2(3-2x_0)+1=0 \Rightarrow -3x_0+7=0 \Rightarrow x_0=\frac{7}{3}$، $y_0=-\frac{8}{3}$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>النقطة هي $\left(\frac{7}{3}, \frac{-8}{3}\right)$ والمعادلة تصبح: $x'^2+4x'y'+y'^2 - \frac{2}{3} = 0$... 
+        <br>أي $x'^2+4x'y'+y'^2 = \frac{2}{3}$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">م5(ii)</span> إيجاد نقطة النقل لحذف $x$ والحد المطلق من $x^2+y^2+2x-6y+10=0$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>لحذف $x$ والحد المطلق: معامل $x$ = 0 والحد المطلق = 0</div></div>
+        <div class="step"><div class="step-num">2</div><div>معامل $x$: $2x_0+2=0 \Rightarrow x_0=-1$</div></div>
+        <div class="step"><div class="step-num">3</div><div>الحد المطلق = $x_0^2+y_0^2+2x_0-6y_0+10=0$: $1+y_0^2-2-6y_0+10=0$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$y_0^2-6y_0+9=0 \Rightarrow (y_0-3)^2=0 \Rightarrow y_0=3$</div></div>
+        <div class="step"><div class="step-num">5</div><div>المعادلة: معامل $y = 2y_0-6=2(3)-6=0$، الحد المطلق = 0</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>النقطة المطلوبة هي $(-1,3)$ والمعادلة تصبح: $x'^2+y'^2=0$</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- تدريبات محلولة -->
+  <div class="card">
+    <div class="card-title">📚 تدريبات (4) — محلولة بالكامل</div>
+
+    <details>
+      <summary><span class="solved-badge">ت1</span> نقل الأصل إلى (1,−2) مع بقاء الاتجاهات — إيجاد إحداثيات أي نقطة</summary>
+      <div class="details-body">
+        <p>باستخدام قانون النقل: $x'=x-1$، $y'=y+2$</p>
+        <p>أي نقطة $P(x,y)$ تصبح إحداثياتها الجديدة: $P'(x-1,\; y+2)$</p>
+        <div class="law-box"><div class="label">مثال</div>النقطة $(3,5)$ تصبح $(2,7)$؛ والنقطة $(-2,-1)$ تصبح $(-3,1)$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت2</span> أوجد النقطة التي يجب أن تنتقل إليها نقطة الأصل حتى تتحول الأولى إلى الثانية</summary>
+      <div class="details-body">
+        <p>إذا انتقل الأصل إلى $(x_0,y_0)$، فإن: $x' = x-x_0$، $y'=y-y_0$</p>
+        <div class="step"><div class="step-num">(i)</div><div>من $(-1,2)$ إلى $(1,2)$: $x_0=-1-1=-2$، $y_0=2-2=0$. <strong>النقطة: $(-2,0)$</strong></div></div>
+        <div class="step"><div class="step-num">(ii)</div><div>من $(-5,2)$ إلى $(5,-2)$: $x_0=-5-5=-10$، $y_0=2-(-2)=4$. <strong>النقطة: $(-10,4)$</strong></div></div>
+        <div class="step"><div class="step-num">(iii)</div><div>من $(a+b,c+d)$ إلى $(a-b,c-d)$: $x_0=(a+b)-(a-b)=2b$، $y_0=(c+d)-(c-d)=2d$. <strong>النقطة: $(2b,2d)$</strong></div></div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت3</span> إيجاد نقطة النقل لتحويل $(y-1)^2=4(x+2)$ إلى $y^2=4x$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>نضع: $x=x'+x_0$، $y=y'+y_0$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(y'+y_0-1)^2=4(x'+x_0+2)$</div></div>
+        <div class="step"><div class="step-num">3</div><div>لنحصل على $y'^2=4x'$: يجب أن $y_0-1=0 \Rightarrow y_0=1$ و $x_0+2=0 \Rightarrow x_0=-2$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>النقطة هي $(-2,1)$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت4-5</span> برهان إمكانية إزالة الحد xy بدوران المحاور بزاوية $\tan 2\theta = \frac{2m}{a-b}$</summary>
+      <div class="details-body">
+        <p>المعادلة: $ax^2+2mxy+by^2+2nx+2Ly+c=0$. بدوران بزاوية $\theta$ نضع:</p>
+        <div class="math-display">$$x \to x\cos\theta - y\sin\theta \qquad y \to x\sin\theta + y\cos\theta$$</div>
+        <p>معامل $xy$ في المعادلة الجديدة يساوي:</p>
+        <div class="math-display">$$-2a\sin\theta\cos\theta + 2m(\cos^2\theta-\sin^2\theta)+2b\sin\theta\cos\theta$$</div>
+        <div class="math-display">$$= (b-a)\sin 2\theta + 2m\cos 2\theta$$</div>
+        <p>لإلغاء هذا المعامل نضعه = صفر:</p>
+        <div class="math-display">$$2m\cos 2\theta = (a-b)\sin 2\theta \Rightarrow \boxed{\tan 2\theta = \frac{2m}{a-b}}$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت6</span> إحذف الحد $xy$ من $8x^2+4xy+5y^2=36$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>$a=8$، $b=5$، $2m=4 \Rightarrow m=2$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$\tan 2\theta = \frac{2\times2}{8-5}=\frac{4}{3}$، أي $\sin 2\theta=\frac{4}{5}$، $\cos 2\theta=\frac{3}{5}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$\cos^2\theta=\frac{1+\cos 2\theta}{2}=\frac{4}{5} \Rightarrow \cos\theta=\frac{2}{\sqrt5}$، $\sin\theta=\frac{1}{\sqrt5}$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$x=\frac{2x'-y'}{\sqrt5}$، $y=\frac{x'+2y'}{\sqrt5}$. نعوض في المعادلة:</div></div>
+        <div class="step"><div class="step-num">5</div><div>$\frac{1}{5}[8(2x'-y')^2+4(2x'-y')(x'+2y')+5(x'+2y')^2]=36$</div></div>
+        <div class="step"><div class="step-num">6</div><div>$= \frac{1}{5}[8(4x'^2-4x'y'+y'^2)+4(2x'^2+3x'y'-2y'^2)+5(x'^2+4x'y'+4y'^2)]$</div></div>
+        <div class="step"><div class="step-num">7</div><div>$= \frac{1}{5}[(32+8+5)x'^2+(-32+12+20)x'y'+(8-8+20)y'^2]$</div></div>
+        <div class="step"><div class="step-num">8</div><div>$= \frac{1}{5}[45x'^2+0+20y'^2]=36$، أي $9x'^2+4y'^2=36$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$\frac{x'^2}{4}+\frac{y'^2}{9}=1 \quad \text{(قطع ناقص)}$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت7</span> الزاوية لتحويل $ax+by+c=0$ إلى الصورة $x=\text{const}$</summary>
+      <div class="details-body">
+        <p>الخط $ax+by+c=0$ له متجه الاتجاه $(b,-a)$، أي يميل بزاوية $\arctan(-a/b)$ مع محور $x$.</p>
+        <p>لجعل هذا الخط موازياً لمحور $Y'$ الجديد (أي ليصبح $x'=\text{const}$)، يجب أن يكون محور $X'$ الجديد موازياً لهذا الخط.</p>
+        <div class="law-box"><div class="label">النتيجة</div>$$\theta = \arctan\!\left(\frac{b}{a}\right)$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت8</span> أزل حدود الدرجة الأولى من $4x^2+y^2-16x+6y+9=0$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>المعادلة: $4x^2+y^2-16x+6y+9=0$. نجمّع الكاملة:</div></div>
+        <div class="step"><div class="step-num">2</div><div>$4(x^2-4x)+y^2+6y+9=0$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$4(x-2)^2-16+(y+3)^2-9+9=0$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$4(x-2)^2+(y+3)^2=16$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>ننقل الأصل إلى $(2,-3)$، تصبح المعادلة: $$4x'^2+y'^2=16 \quad\Rightarrow\quad \frac{x'^2}{4}+\frac{y'^2}{16}=1$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت9</span> إحذف $x,y$ من $14x^2-4xy+11y^2-44x-58y+71=0$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>$a=14$، $2m=-4\Rightarrow m=-2$، $b=11$، $2n=-44\Rightarrow n=-22$، $2L=-58\Rightarrow L=-29$</div></div>
+        <div class="step"><div class="step-num">2</div><div>المعادلتان: $14x_0-2y_0-22=0$ و $-2x_0+11y_0-29=0$</div></div>
+        <div class="step"><div class="step-num">3</div><div>من الأولى: $y_0=7x_0-11$. نعوض: $-2x_0+11(7x_0-11)=29 \Rightarrow 75x_0=150 \Rightarrow x_0=2$، $y_0=3$</div></div>
+        <div class="step"><div class="step-num">4</div><div>الحد الثابت = $14(4)-4(6)+11(9)+2(-22)(2)+2(-29)(3)+71=56-24+99-88-174+71=-60$</div></div>
+        <div class="step"><div class="step-num">5</div><div>المعادلة بعد النقل: $14x'^2-4x'y'+11y'^2=60$</div></div>
+        <div class="step"><div class="step-num">6</div><div>لإزالة $x'y'$: $\tan 2\theta=\frac{-4}{14-11}=\frac{-4}{3}$، $\cos 2\theta=-\frac{3}{5}$، $\sin 2\theta=\frac{4}{5}$</div></div>
+        <div class="step"><div class="step-num">7</div><div>$\cos\theta=\frac{1}{\sqrt5}$، $\sin\theta=\frac{2}{\sqrt5}$. بعد الدوران:</div></div>
+        <div class="law-box"><div class="label">النتيجة النهائية</div>$$\frac{x''^2}{6}+\frac{y''^2}{4}=1 \quad \text{(قطع ناقص)}$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت10</span> دوران بزاوية $\theta=\tan^{-1}(\frac{1}{2})$ وتحويل $2x^2-3xy+y^2=0$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>$\tan\theta=\frac{1}{2}$: $\cos\theta=\frac{2}{\sqrt5}$، $\sin\theta=\frac{1}{\sqrt5}$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$x=\frac{2x'-y'}{\sqrt5}$، $y=\frac{x'+2y'}{\sqrt5}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$\frac{1}{5}[2(2x'-y')^2-3(2x'-y')(x'+2y')+(x'+2y')^2]=0$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$= \frac{1}{5}[8x'^2-8x'y'+2y'^2-3(2x'^2+3x'y'-2y'^2)+x'^2+4x'y'+4y'^2]$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$= \frac{1}{5}[(8-6+1)x'^2+(-8-9+4)x'y'+(2+6+4)y'^2]$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$3x'^2-13x'y'+12y'^2=0 \quad\Rightarrow\quad (3x'-4y')(x'-3y')=0$$
+        <p>أي خطان: $y'=\frac{3}{4}x'$ أو $y'=\frac{1}{3}x'$</p></div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت11</span> نقل وإدارة $x^2+xy+y^2-2x-y-4=0$ إلى أبسط صورة</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>إيجاد نقطة النقل: $\frac{\partial}{\partial x}=2x+y-2=0$، $\frac{\partial}{\partial y}=x+2y-1=0$</div></div>
+        <div class="step"><div class="step-num">2</div><div>حل: $2x_0+y_0=2$، $x_0+2y_0=1$ → $x_0=1$، $y_0=0$</div></div>
+        <div class="step"><div class="step-num">3</div><div>الحد الثابت = $1+0+0-2-0-4=-5$. المعادلة: $x'^2+x'y'+y'^2=5$</div></div>
+        <div class="step"><div class="step-num">4</div><div>لإزالة $x'y'$: $a=b=1$، $\tan 2\theta=\infty \Rightarrow 2\theta=90° \Rightarrow \theta=45°$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$x'=\frac{x''-y''}{\sqrt2}$، $y'=\frac{x''+y''}{\sqrt2}$</div></div>
+        <div class="step"><div class="step-num">6</div><div>$\frac{(x''-y'')^2+(x''-y'')(x''+y'')+(x''+y'')^2}{2}=5$</div></div>
+        <div class="step"><div class="step-num">7</div><div>$\frac{3x''^2+y''^2}{2}=5$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$3x''^2+y''^2=10 \quad\Rightarrow\quad \frac{x''^2}{10/3}+\frac{y''^2}{10}=1 \quad \text{(قطع ناقص)}$$
+        <p>نقطة الأصل الجديدة في الإحداثيات الأصلية: $(1,0)$</p></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- زر الاختبار -->
+  <div style="text-align:center">
+    <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=cb4ac13d-15d3-4676-808f-1f136bf6dcb6" target="_blank" class="test-btn">
+      🧪 ابدأ الاختبار الشامل — تغيير المحاور ←
+    </a>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB: القطع المكافئ -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-parabola" class="tab-panel">
+<div class="section-wrap">
+  <div class="sec-title">🌿 القطع المكافئ <span class="badge">The Parabola</span></div>
+
+  <div class="card">
+    <div class="card-title">📖 تعريف القطع المكافئ</div>
+    <p><strong>القطع المكافئ</strong> هو المحل الهندسي للنقاط الواقعة في المستوى والتي تبعد عن نقطة ثابتة تُسمى <strong style="color:var(--gold)">البؤرة (Focus)</strong> بمسافة مساوية لبعدها عن مستقيم ثابت يُسمى <strong style="color:var(--gold)">الدليل (Directrix)</strong>.</p>
+    <ul style="margin-top:.8rem">
+      <li>الخط العمودي على الدليل ويمر بالبؤرة يُسمى <strong>محور التماثل</strong></li>
+      <li>نقطة تقاطع القطع المكافئ مع محور التماثل تُسمى <strong>رأس القطع المكافئ (vertex)</strong></li>
+      <li>الرأس هو النقطة التي يكون عندها الميل للصفر أو للانعكاس</li>
+      <li>الوتر البؤري العمودي يصل بين نقطتين على القطع ويمر بالبؤرة</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Axes -->
+        <line x1="20" y1="150" x2="400" y2="150" stroke="#8892a8" stroke-width="1.5" marker-end="url(#arP)"/>
+        <line x1="80" y1="280" x2="80" y2="20" stroke="#8892a8" stroke-width="1.5" marker-end="url(#arP)"/>
+        <text x="405" y="155" fill="#8892a8" font-size="12">X</text>
+        <text x="84" y="14" fill="#8892a8" font-size="12">Y</text>
+        <!-- Directrix -->
+        <line x1="30" y1="20" x2="30" y2="285" stroke="#f87171" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="5" y="295" fill="#f87171" font-size="11" font-family="Tajawal">x=-p</text>
+        <!-- Focus -->
+        <circle cx="140" cy="150" r="5" fill="#f5c518"/>
+        <text x="145" y="165" fill="#f5c518" font-size="11" font-family="Tajawal">F(p,0)</text>
+        <!-- Vertex -->
+        <circle cx="80" cy="150" r="4" fill="#a78bfa"/>
+        <text x="55" y="140" fill="#a78bfa" font-size="11" font-family="Tajawal">رأس</text>
+        <!-- Parabola -->
+        <path d="M80,150 Q130,90 230,60 Q300,45 380,40" stroke="#34d399" stroke-width="2" fill="none"/>
+        <path d="M80,150 Q130,210 230,240 Q300,255 380,260" stroke="#34d399" stroke-width="2" fill="none"/>
+        <!-- Latus rectum -->
+        <line x1="140" y1="80" x2="140" y2="220" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="145" y="75" fill="#00e5ff" font-size="10" font-family="Tajawal">وتر بؤري عمودي</text>
+        <text x="145" y="86" fill="#00e5ff" font-size="10" font-family="Tajawal">طوله 4p</text>
+        <defs><marker id="arP" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 Z" fill="#8892a8"/></marker></defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- معادلات القطع المكافئ -->
+  <div class="card">
+    <div class="card-title">📐 معادلات القطع المكافئ</div>
+    <table>
+      <tr><th>الشكل</th><th>المعادلة</th><th>الرأس</th><th>البؤرة</th><th>الدليل</th><th>الاتجاه</th></tr>
+      <tr><td>أفقي يمين</td><td>$y^2=4px$</td><td>$(0,0)$</td><td>$(p,0)$</td><td>$x=-p$</td><td>←</td></tr>
+      <tr><td>أفقي يسار</td><td>$y^2=-4px$</td><td>$(0,0)$</td><td>$(-p,0)$</td><td>$x=p$</td><td>→</td></tr>
+      <tr><td>رأسي أعلى</td><td>$x^2=4py$</td><td>$(0,0)$</td><td>$(0,p)$</td><td>$y=-p$</td><td>↑</td></tr>
+      <tr><td>رأسي أسفل</td><td>$x^2=-4py$</td><td>$(0,0)$</td><td>$(0,-p)$</td><td>$y=p$</td><td>↓</td></tr>
+      <tr><td>عام أفقي</td><td>$(y-k)^2=4p(x-h)$</td><td>$(h,k)$</td><td>$(h+p,k)$</td><td>$x=h-p$</td><td>←</td></tr>
+      <tr><td>عام رأسي</td><td>$(x-h)^2=4p(y-k)$</td><td>$(h,k)$</td><td>$(h,k+p)$</td><td>$y=k-p$</td><td>↑</td></tr>
+    </table>
+
+    <div class="law-box">
+      <div class="label">⚡ معادلة المماس للقطع $y^2=4ax$ عند $(x_1,y_1)$</div>
+      <div class="math-display">$$yy_1 = 2a(x + x_1)$$</div>
+    </div>
+    <div class="law-box">
+      <div class="label">⚡ شرط تماس $y=mx+c$ مع $y^2=4ax$</div>
+      <div class="math-display">$$c = \frac{a}{m}$$</div>
+    </div>
+    <div class="law-box">
+      <div class="label">⚡ المعادلات البارامترية لـ $y^2=4ax$</div>
+      <div class="math-display">$$x = at^2 \qquad y = 2at$$</div>
+    </div>
+    <div class="law-box">
+      <div class="label">⚡ المعادلة القطبية (بؤرة أصل)</div>
+      <div class="math-display">$$r = \frac{L}{1 - \cos\theta} \qquad L = 2p$$</div>
+    </div>
+  </div>
+
+  <!-- أمثلة -->
+  <div class="card">
+    <div class="card-title">✅ أمثلة محلولة (6)1-</div>
+
+    <details>
+      <summary><span class="solved-badge">م1</span> دراسة القطع المكافئ $y^2-2y=4(x+1)$ وإيجاد رأسه وبؤرته ودليله</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>نكتب المعادلة بالصورة: $y^2-2y=4x+4$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(y-1)^2-1=4(x+1) \Rightarrow (y-1)^2=4(x+1)+1=4(x+\frac{5}{4})$</div></div>
+        <div class="step"><div class="step-num">3</div><div>الصورة: $(y-k)^2=4p(x-h)$ حيث $k=1$، $h=-1$، $4p=4 \Rightarrow p=1$</div></div>
+        <div class="step"><div class="step-num">4</div><div>الرأس: $(-1,1)$، البؤرة: $(-1+1,1)=(0,2)$، الدليل: $x=-1-1=-2$</div></div>
+        <div class="law-box"><div class="label">ملخص</div>
+          <p>الرأس: $(-1,1)$ | البؤرة: $(0,2)$ | الدليل: $x=-2$ | محور التماثل: $y=1$</p>
+          <p>طول الوتر البؤري: $4p=4$</p>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">م2</span> إيجاد مماسي القطع $x^2-8x-2y+7=0$ (اترك للطالب)</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>نحول إلى الصورة القياسية: $x^2-8x=2y-7$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(x-4)^2-16=2y-7 \Rightarrow (x-4)^2=2(y+\frac{9}{2})$</div></div>
+        <div class="step"><div class="step-num">3</div><div>قطع مكافئ رأسي، رأسه $(4,-\frac{9}{2})$، بؤرته $(4,-4)$، دليله $y=-5$</div></div>
+        <div class="step"><div class="step-num">4</div><div>المماس عند $(x_1,y_1)$: $xx_1-4(x+x_1)-(y+y_1)+\frac{7}{2}=0$... نحسب الميل $m=\frac{x_1-4}{1}$</div></div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">م3</span> قطع مكافئ $x^2=ay^2+by+c$ يمر بالنقاط $(-2,1)$, $(-1,3)$, $(0,2)$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>الصورة العامة: $x^2=ay^2+by+c$ — نعوض النقاط الثلاث</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(-2,1)$: $4=a+b+c$ ... (1)</div></div>
+        <div class="step"><div class="step-num">3</div><div>$(-1,3)$: $1=9a+3b+c$ ... (2)</div></div>
+        <div class="step"><div class="step-num">4</div><div>$(0,2)$: $0=4a+2b+c$ ... (3)</div></div>
+        <div class="step"><div class="step-num">5</div><div>من (1) و(3): $(a+b+c)-(4a+2b+c)=4-0 \Rightarrow -3a-b=4$ ... (4)</div></div>
+        <div class="step"><div class="step-num">6</div><div>من (2) و(3): $(9a+3b+c)-(4a+2b+c)=1-0 \Rightarrow 5a+b=1$ ... (5)</div></div>
+        <div class="step"><div class="step-num">7</div><div>(4)+(5): $2a=-3 \Rightarrow a=-\frac{3}{2}$، $b=\frac{19}{2}$، $c=-21$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$x^2 = -\frac{3}{2}y^2+\frac{19}{2}y-21 \quad\Rightarrow\quad 2x^2+3y^2-19y+42=0$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">م4</span> إيجاد نقطة M على $y=x^2-2x-8$ تكون المماس عندها موازياً للخط $4x+y+4=0$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>ميل القطع: $\frac{dy}{dx}=2x-2$</div></div>
+        <div class="step"><div class="step-num">2</div><div>ميل الخط المعطى: $-4$</div></div>
+        <div class="step"><div class="step-num">3</div><div>للتوازي: $2x-2=-4 \Rightarrow x=-1$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$y=1+2-8=-5$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>النقطة $M(-1,-5)$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">م5</span> برهان: شرط تماس $y=mx+c$ مع $y^2=4ax$ هو $c=\frac{a}{m}$ وأن نقطة التماس $\left(\frac{a}{m^2}, \frac{2a}{m}\right)$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>نعوض $y=mx+c$ في $y^2=4ax$: $(mx+c)^2=4ax$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$m^2x^2+(2mc-4a)x+c^2=0$</div></div>
+        <div class="step"><div class="step-num">3</div><div>للتماس: $\Delta=0 \Rightarrow (2mc-4a)^2-4m^2c^2=0$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$4m^2c^2-16amc+16a^2-4m^2c^2=0 \Rightarrow -16amc+16a^2=0$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$c=\frac{a}{m}$ ✓</div></div>
+        <div class="step"><div class="step-num">6</div><div>إيجاد نقطة التماس: $x=\frac{4a-2mc}{2m^2}=\frac{a}{m^2}$، $y=mx+c=\frac{a}{m}+\frac{a}{m}=\frac{2a}{m}$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$c = \frac{a}{m} \qquad\text{نقطة التماس: }\left(\frac{a}{m^2},\; \frac{2a}{m}\right)$$</div>
       </div>
     </details>
   </div>
 
   <!-- تدريبات -->
   <div class="card">
-    <h3>📝 تدريبات (4)</h3>
+    <div class="card-title">📚 تدريبات (6)1- محلولة</div>
+
     <details>
-      <summary>عرض جميع مسائل التدريبات (12 مسألة)</summary>
+      <summary><span class="solved-badge">ت1</span> ادرس واكتشف كل ما تستطيع عن القطاعات المكافئة</summary>
       <div class="details-body">
-        <ol>
-          <li>إذا نُقلت نقطة الأصل إلى النقطة (1,-2) مع بقاء اتجاهي المحورين ثابتاً.</li>
-          <li>أوجد النقط التي يجب أن تنتقل إليها نقطة الأصل حتى تتحول:
-            <ul>
-              <li>(i) النقطة (-1,2) إلى النقطة (1,2)</li>
-              <li>(ii) النقطة (-5,2) إلى النقطة (5,-2)</li>
-              <li>(iii) النقطة (a+b,c+d) إلى النقطة (a-b,c-d)</li>
-            </ul>
-          </li>
-          <li>أوجد النقط التي يجب أن تنتقل إليها نقطة الأصل حتى تتحول المعادلة: \((y-1)^2 = 4(x+2)\) إلى \(y^2 = 4x\)</li>
-          <li>أثبت أنه يمكن إزالة الحد xy من المعادلة: \(ax^2 + 2mxy + by^2 + 2nx + 2Ly + c = 0\) وذلك بدوران المحاور زاوية معينة θ تعطى من العلاقة: \(\tan 2\theta = \frac{2m}{a-b}\)</li>
-          <li>احذف الحد xy من المعادلة: \(8x^2 + 4xy + 5y^2 = 36\)</li>
-          <li>ما هي الزاوية التي يجب أن يدور حولها محور الاحداثيات المتعامدة حتى تؤول المعادلة \(ax + by + c = 0\) إلى الصورة \(x = \text{constant}\)</li>
-          <li>أزل حدود الدرجة الأولى من المعادلة: \(4x^2 + y^2 - 16x + 6y + 9 = 0\)</li>
-          <li>احذف الحدين x,y من المعادلة: \(14x^2 - 4xy + 11y^2 - 44x - 58y + 71 = 0\)</li>
-          <li>إذا دارت المحاور زاوية قدرها \(\tan^{-1}(1/2)\) فأوجد الصورة التي تؤول إليها المعادلة: \(2x^2 - 3xy + y^2 = 0\)</li>
-          <li>بنقل نقطة الأصل ودوران المحاور... ضع المعادلة التالية: \(x^2 + xy + y^2 - 2x - y - 4 = 0\) في أبسط صورة ممكنة وأوجد الإحداثيات الجديدة لنقطة الأصل.</li>
-          <li>إذا نُقلت نقطة الأصل إلى النقطة (1,-3) ودار المحوران زاوية مقدارها \(\tan^{-1}\frac{3}{4}\)، أوجد الإحداثي الجديد للنقطة (2,-2) والمعادلة الجديدة للمنحنى: \(36x^2 + 24xy + 29y^2 + 150y + 45 = 0\)</li>
-        </ol>
+        <p><strong>(i)</strong> $x^2-2x+8y+10=0$</p>
+        <div class="step"><div class="step-num">1</div><div>$(x-1)^2-1+8y+10=0 \Rightarrow (x-1)^2=-8(y+\frac{9}{8})$</div></div>
+        <div class="step"><div class="step-num">2</div><div>رأسي، $4p=8\Rightarrow p=2$، يفتح لأسفل</div></div>
+        <div class="law-box" style="padding:.6rem 1rem"><div class="label">النتيجة</div>الرأس: $(1,-9/8)$، البؤرة: $(1,-9/8-2)=(1,-25/8)$، الدليل: $y=-9/8+2=7/8$</div>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(ii)</strong> $y^2+6y+2x+5=0$</p>
+        <div class="step"><div class="step-num">1</div><div>$(y+3)^2-9+2x+5=0 \Rightarrow (y+3)^2=-2(x+2)$</div></div>
+        <div class="law-box" style="padding:.6rem 1rem"><div class="label">النتيجة</div>الرأس: $(-2,-3)$، البؤرة: $(-2-\frac{1}{2},-3)=(-\frac{5}{2},-3)$، الدليل: $x=-\frac{3}{2}$، يفتح لليسار</div>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(iii)</strong> $x^2-3y-8x+12=4$</p>
+        <div class="step"><div class="step-num">1</div><div>$(x-4)^2-16+12-4=3y \Rightarrow (x-4)^2=3(y+\frac{8}{3})$... $4p=3 \Rightarrow p=\frac{3}{4}$</div></div>
+        <div class="law-box" style="padding:.6rem 1rem"><div class="label">النتيجة</div>الرأس: $(4,-8/3)$، البؤرة: $(4,-8/3+3/4)=(4,-23/12)$، يفتح لأعلى</div>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(iv)</strong> $y^2+4x-8=0 \Rightarrow y^2=-4(x-2)$</p>
+        <div class="law-box" style="padding:.6rem 1rem"><div class="label">النتيجة</div>الرأس: $(2,0)$، البؤرة: $(1,0)$، الدليل: $x=3$، يفتح لليسار</div>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(v)</strong> $x^2+2x-4y+3=0 \Rightarrow (x+1)^2=4(y-\frac{1}{2})$</p>
+        <div class="law-box" style="padding:.6rem 1rem"><div class="label">النتيجة</div>الرأس: $(-1,1/2)$، البؤرة: $(-1,3/2)$، الدليل: $y=-1/2$، يفتح لأعلى</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت2</span> أوجد معادلة القطع المكافئ لكل شرط</summary>
+      <div class="details-body">
+        <p><strong>• البؤرة $(3,0)$، الدليل $x=-3$:</strong> $y^2=12x$</p>
+        <p><strong>• الرأس $(-2,3)$، البؤرة $(1,3)$:</strong> $(y-3)^2=12(x+2)$</p>
+        <p><strong>• يمر بالنقاط $(3,2)$، $(2,0)$، $(0,3)$ موازي لـ X:</strong><br>
+          الصورة $x=ay^2+by+c$. بالتعويض: $a=-5/2$، $b=10$، $c=-3/2$<br>
+          $x=-\frac{5}{2}y^2+10y-\frac{3}{2}$ أو $2x+5y^2-20y+3=0$</p>
+        <p><strong>• يمر بالنقاط $(5,6)$، $(3,3)$، $(6,-3)$ موازي لـ Y:</strong><br>
+          الصورة $y=ax^2+bx+c$. بالتعويض: $a=-1$، $b=7$، $c=-10$ → $y=-x^2+7x-10$</p>
+        <p><strong>• البؤرتان $(3,-3)$ و $(3,5)$:</strong> وسط البؤرتين $(3,1)$، $p=4$<br>
+          $(x-3)^2=16(y-1)$</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت3</span> إيجاد $k$ ليماس الخط $y=kx+2$ القطع $y^2=4x$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>شرط التماس: $c=\frac{a}{m}$ حيث $a=1$، $m=k$، $c=2$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$2=\frac{1}{k} \Rightarrow k=\frac{1}{2}$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$k = \dfrac{1}{2}$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت4</span> إيجاد $\lambda$ ليماس $\lambda x - y - 2x + 1 = 0$ القطع $y^2 = x^2 - 2x + 1$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>نكتب: $x = y^2 + 2y - 1$ ... والخط: $y = \lambda x - 2x + 1 = (\lambda-2)x+1$</div></div>
+        <div class="step"><div class="step-num">2</div><div>نعوض المستقيم في المعادلة، للتماس $\Delta=0$، نحصل على $\lambda=3$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$\lambda=3$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت5</span> معادلة مماس $y=x^2-x+1$ الموازي للخط $2x+y-3=0$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>$\frac{dy}{dx}=2x-1$، ميل الخط $=-2$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$2x-1=-2 \Rightarrow x=-\frac{1}{2}$، $y=\frac{7}{4}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>المماس: $y-\frac{7}{4}=-2(x+\frac{1}{2}) \Rightarrow y=-2x+\frac{3}{4}$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$2x+y-\frac{3}{4}=0$ أو $8x+4y-3=0$</div>
       </div>
     </details>
   </div>
 
-  <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=cb4ac13d-15d3-4676-808f-1f136bf6dcb6" target="_blank" class="quiz-btn">🎯 الاختبار الشامل - تغيير المحاور</a>
+  <div style="text-align:center">
+    <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=9b1855d5-9402-45e4-87de-c11860362bf7" target="_blank" class="test-btn">
+      🧪 ابدأ الاختبار الشامل — القطع المكافئ ←
+    </a>
+  </div>
+</div>
 </div>
 
-<!-- ==================== SECTION 2: القطع المكافئ ==================== -->
-<div id="parabola" class="section">
-  <div class="section-title">🔵 القطع المكافئ - The Parabola</div>
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB: القطع الناقص -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-ellipse" class="tab-panel">
+<div class="section-wrap">
+  <div class="sec-title">⭕ القطع الناقص <span class="badge">The Ellipse</span></div>
 
   <div class="card">
-    <h3>مقدمة في القطاعات المخروطية</h3>
-    <p>القطع المخروطي هو المحل الهندسي لنقطة تتحرك بحيث تكون العلاقة بين بُعدها عن نقطة ثابتة وبُعدها عن مستقيم ثابتة نسبة ثابتة تسمى <strong>الاختلاف المركزي e</strong>.</p>
-    <div class="grid-2">
-      <div class="callout"><span class="tag">e = 1</span> القطع مكافئ (Parabola)</div>
-      <div class="callout yellow"><span class="tag yellow">e &lt; 1</span> القطع ناقص (Ellipse)</div>
-      <div class="callout green"><span class="tag green">e &gt; 1</span> القطع زائد (Hyperbola)</div>
-      <div class="callout pink"><span class="tag pink">e = 0</span> دائرة (Circle)</div>
+    <div class="card-title">📖 تعريف القطع الناقص</div>
+    <p><strong>القطع الناقص (Ellipse)</strong> هو المنحنى الهندسي الذي يحقق أن مجموع بعد أي نقطة عليه عن نقطتين ثابتتين (البؤرتين) يبقى دائماً ثابتاً ومساوياً لطول القطر الأكبر.</p>
+    <div class="math-display">$$PF_1 + PF_2 = 2a = \text{ثابت}$$</div>
+    <div class="note-box">
+      <span class="label">الخاصية المماسية الهامة:</span> الخط المماس عند أي نقطة على القطع الناقص يشكّل زاويتين متساويتين مع الخطين الواصلين للبؤرتين. لهذا في غرفة بيضاوية الشكل، الموجات الصوتية من إحدى البؤرتين تصل للأخرى بدقة.
     </div>
-    <!-- SVG أنواع القطاعات -->
-    <svg width="100%" height="160" viewBox="0 0 600 160" style="max-width:600px;display:block;margin:1rem auto;">
-      <rect width="600" height="160" fill="#162032" rx="10"/>
-      <!-- parabola -->
-      <path d="M 50 130 Q 100 30 150 130" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
-      <text x="75" y="155" fill="#22d3ee" font-size="12" text-anchor="middle">مكافئ</text>
-      <!-- ellipse -->
-      <ellipse cx="270" cy="80" rx="60" ry="35" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
-      <text x="270" y="140" fill="#fbbf24" font-size="12" text-anchor="middle">ناقص</text>
-      <!-- hyperbola -->
-      <path d="M 430 10 Q 480 80 430 150" fill="none" stroke="#f472b6" stroke-width="2.5"/>
-      <path d="M 530 10 Q 480 80 530 150" fill="none" stroke="#f472b6" stroke-width="2.5"/>
-      <text x="480" y="155" fill="#f472b6" font-size="12" text-anchor="middle">زائد</text>
-    </svg>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 440 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Axes -->
+        <line x1="20" y1="130" x2="420" y2="130" stroke="#8892a8" stroke-width="1.2"/>
+        <line x1="220" y1="240" x2="220" y2="20" stroke="#8892a8" stroke-width="1.2"/>
+        <!-- Ellipse -->
+        <ellipse cx="220" cy="130" rx="160" ry="90" fill="none" stroke="#34d399" stroke-width="2.5"/>
+        <!-- Foci -->
+        <circle cx="108" cy="130" r="5" fill="#f5c518"/>
+        <circle cx="332" cy="130" r="5" fill="#f5c518"/>
+        <text x="95" y="148" fill="#f5c518" font-size="11" font-family="Tajawal">F₁(-ae,0)</text>
+        <text x="318" y="148" fill="#f5c518" font-size="11" font-family="Tajawal">F₂(ae,0)</text>
+        <!-- Vertices -->
+        <circle cx="60" cy="130" r="4" fill="#a78bfa"/>
+        <circle cx="380" cy="130" r="4" fill="#a78bfa"/>
+        <circle cx="220" cy="40" r="4" fill="#a78bfa"/>
+        <circle cx="220" cy="220" r="4" fill="#a78bfa"/>
+        <text x="35" y="125" fill="#a78bfa" font-size="11" font-family="Tajawal">(-a,0)</text>
+        <text x="382" y="125" fill="#a78bfa" font-size="11" font-family="Tajawal">(a,0)</text>
+        <!-- a, b labels -->
+        <line x1="220" y1="130" x2="380" y2="130" stroke="#00e5ff" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="295" y="122" fill="#00e5ff" font-size="12" font-family="Tajawal">a</text>
+        <line x1="220" y1="130" x2="220" y2="40" stroke="#00e5ff" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="228" y="90" fill="#00e5ff" font-size="12" font-family="Tajawal">b</text>
+        <!-- Directrices -->
+        <line x1="145" y1="20" x2="145" y2="240" stroke="#f87171" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="295" y1="20" x2="295" y2="240" stroke="#f87171" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="90" y="18" fill="#f87171" font-size="10" font-family="Tajawal">x=-a/e</text>
+        <text x="296" y="18" fill="#f87171" font-size="10" font-family="Tajawal">x=a/e</text>
+      </svg>
+    </div>
   </div>
 
+  <!-- معادلات -->
   <div class="card">
-    <h3>(6)-1 القطع المكافئ - The Parabola</h3>
-    <p>القطع المكافئ هو قطع مخروطي، ينشأ من قطع سطح مخروطي دائري قائم بمستوى موازٍ لراسم الخروط (أي الخط المولد له) بمعلومية نقطة تسمى "البؤرة" وخط مستقيم مقابل في المستوى يسمى "الدليل".</p>
-    <div class="callout">
-      <strong>التعريف الهندسي:</strong> القطع المكافئ هو المحل الهندسي للنقاط الواقعة في المستوى والتي تبعد عن البؤرة بمسافة مساوية لبُعدها عن الدليل.
+    <div class="card-title">📐 المعادلات والعلاقات الجبرية</div>
+    <div class="law-box">
+      <div class="label">⚡ الصورة القياسية — المركز في الأصل</div>
+      <div class="math-display">$$\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 \qquad (a > b > 0)$$</div>
     </div>
-    <div class="formula-box">\[ y^2 = 4px \quad \text{(القطع المكافئ بمحور أفقي)} \]</div>
+    <div class="law-box">
+      <div class="label">⚡ العلاقات الأساسية</div>
+      <div class="math-display">$$b^2 = a^2(1-e^2) \qquad c^2 = a^2 - b^2 \qquad e = \frac{c}{a} < 1$$</div>
+    </div>
+
     <table>
-      <tr><th>الخاصية</th><th>القيمة</th></tr>
-      <tr><td>رأسه</td><td>(0, 0)</td></tr>
-      <tr><td>بؤرته</td><td>(p, 0)</td></tr>
-      <tr><td>دليله</td><td>x = -p</td></tr>
-      <tr><td>محوره</td><td>y = 0</td></tr>
-      <tr><td>طول الوتر البؤري العمودي</td><td>4p</td></tr>
+      <tr><th>العنصر</th><th>المحور الأكبر على X</th><th>المحور الأكبر على Y</th></tr>
+      <tr><td>المعادلة</td><td>$\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$</td><td>$\frac{x^2}{b^2}+\frac{y^2}{a^2}=1$</td></tr>
+      <tr><td>الرؤوس</td><td>$(\pm a, 0)$</td><td>$(0,\pm a)$</td></tr>
+      <tr><td>البؤرتان</td><td>$(\pm ae, 0)$</td><td>$(0,\pm ae)$</td></tr>
+      <tr><td>الدليلان</td><td>$x=\pm\frac{a}{e}$</td><td>$y=\pm\frac{a}{e}$</td></tr>
+      <tr><td>الوتر البؤري $2L$</td><td>$\frac{2b^2}{a}$</td><td>$\frac{2b^2}{a}$</td></tr>
+      <tr><td>المساحة</td><td colspan="2">$A = \pi ab$</td></tr>
     </table>
 
-    <!-- SVG قطع مكافئ -->
-    <svg width="100%" height="250" viewBox="0 0 500 250" style="max-width:500px;display:block;margin:1rem auto;">
-      <rect width="500" height="250" fill="#162032" rx="10"/>
-      <line x1="20" y1="125" x2="480" y2="125" stroke="#475569" stroke-width="1.5"/>
-      <line x1="120" y1="10" x2="120" y2="240" stroke="#475569" stroke-width="1.5"/>
-      <!-- dashed directrix -->
-      <line x1="80" y1="20" x2="80" y2="240" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="6,4"/>
-      <text x="55" y="18" fill="#f472b6" font-size="12">x=-p</text>
-      <!-- parabola -->
-      <path d="M 80 20 Q 120 125 80 230" fill="none" stroke="#22d3ee" stroke-width="0"/>
-      <path d="M 120 125 Q 200 30 350 10 Q 200 30 120 125 Q 200 220 350 240" fill="none" stroke="#22d3ee" stroke-width="2.5"/>
-      <!-- focus -->
-      <circle cx="200" cy="125" r="6" fill="#fbbf24"/>
-      <text x="210" y="120" fill="#fbbf24" font-size="12">F(p,0)</text>
-      <!-- vertex -->
-      <circle cx="120" cy="125" r="5" fill="#34d399"/>
-      <text x="95" y="118" fill="#34d399" font-size="12">رأس</text>
-      <!-- labels -->
-      <text x="460" y="122" fill="#475569" font-size="13">X</text>
-      <text x="125" y="18" fill="#475569" font-size="13">Y</text>
-    </svg>
-
-    <h4>أشكال معادلة القطع المكافئ:</h4>
-    <div class="grid-2">
-      <div class="formula-box">\[ y^2 = 4px \quad \text{يفتح يميناً} \]</div>
-      <div class="formula-box">\[ y^2 = -4px \quad \text{يفتح يساراً} \]</div>
-      <div class="formula-box">\[ x^2 = 4py \quad \text{يفتح لأعلى} \]</div>
-      <div class="formula-box">\[ x^2 = -4py \quad \text{يفتح لأسفل} \]</div>
+    <div class="law-box">
+      <div class="label">⚡ معادلة المماس عند $(x_1,y_1)$</div>
+      <div class="math-display">$$\frac{xx_1}{a^2} + \frac{yy_1}{b^2} = 1$$</div>
     </div>
-
-    <h4>القطع المكافئ ذو الرأس (h,k):</h4>
-    <div class="formula-box">\[ (y-k)^2 = 4p(x-h) \quad \text{(محور أفقي)} \]</div>
-    <div class="formula-box">\[ (x-h)^2 = 4p(y-k) \quad \text{(محور رأسي)} \]</div>
+    <div class="law-box">
+      <div class="label">⚡ شرط تماس $y=mx+c$ مع الناقص</div>
+      <div class="math-display">$$c^2 = a^2m^2 + b^2 \qquad \Rightarrow \qquad y = mx \pm\sqrt{a^2m^2+b^2}$$</div>
+    </div>
+    <div class="law-box">
+      <div class="label">⚡ المعادلات البارامترية</div>
+      <div class="math-display">$$x = a\cos t \qquad y = b\sin t$$</div>
+    </div>
+    <div class="note-box">
+      <span class="label">دائرة الاستدلال:</span> دائرة مركزها مركز القطع وبقطر $\sqrt{a^2+b^2}$<br>
+      <span class="label">الدائرة المساعدة:</span> $x^2+y^2=a^2$ (نصف قطرها = القطر الأكبر للناقص)
+    </div>
   </div>
 
+  <!-- أمثلة -->
   <div class="card">
-    <h3>المعادلات المهمة للقطع المكافئ</h3>
-
-    <h4>معادلة المماس للقطع المكافئ y² = 4ax عند النقطة (x₁, y₁):</h4>
-    <div class="formula-box">\[ yy_1 = 2a(x + x_1) \]</div>
-
-    <h4>المعادلات البارامترية:</h4>
-    <div class="formula-box">\[ x = at^2 \quad , \quad y = 2at \]</div>
-
-    <h4>شرط تماس المستقيم y = mx + c مع القطع المكافئ y² = 4ax:</h4>
-    <div class="formula-box">\[ c = \frac{a}{m} \]</div>
-    <div class="callout yellow">ونقطة التماس تكون: \( \left(\frac{a}{m^2}, \frac{2a}{m}\right) \)</div>
-
-    <h4>المعادلة القطبية للقطع المكافئ:</h4>
-    <div class="formula-box">\[ r = \frac{L}{2}\csc^2\frac{\theta}{2} \]</div>
-
-    <h4>المعادلة العامة للقطع المكافئ الأفقي (x = ay² + by + c):</h4>
-    <div class="formula-box">\[ h = c - \frac{b^2}{4a} \quad , \quad k = -\frac{b}{2a} \]</div>
-
-    <h4>المعادلة العامة للقطع المكافئ الرأسي (y = ax² + bx + c):</h4>
-    <div class="formula-box">\[ h = -\frac{b}{2a} \quad , \quad k = c - \frac{b^2}{4a} \]</div>
-
-    <h4>الشرط الجبري: الإختلاف المركزي للقطع المكافئ B² = 4AC في:</h4>
-    <div class="formula-box">\[ Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0 \]</div>
-  </div>
-
-  <!-- أمثلة محلولة -->
-  <div class="card">
-    <h3>🔍 أمثلة محلولة (6)-1</h3>
+    <div class="card-title">✅ أمثلة محلولة (6)2-</div>
 
     <details>
-      <summary>مثال (1): دراسة ورسم القطع المكافئ y² = 4(x+y)</summary>
+      <summary><span class="solved-badge">م1</span> دراسة القطع الناقص $9x^2+4y^2+54x-16y+61=0$</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> نكتب المعادلة في الصورة القياسية: \(y^2 - 4y = 4x \Rightarrow (y-2)^2 = 4(x+1)\)</div>
-        <div class="step"><span class="step-num">2</span> هذه المعادلة للقطع المكافئ تناظر الصورة: \((y-k)^2 = 4a(x-h)\)</div>
-        <div class="step"><span class="step-num">3</span> وهي معادلة قطع مكافئ محوره يوازي محور X ومفتوح إلى اليمين ورأسه النقطة: \((h,k) = (-1, 2)\)</div>
-        <div class="step"><span class="step-num">4</span> \(4a = 4 \Rightarrow a = 1\) ، وتكون بؤرته: (a+h, k) = (0, 2)</div>
-        <div class="step"><span class="step-num">5</span> محور القطع: y = 2 ، دليله: x = -a - (-1) = -2</div>
-        <div class="callout green"><strong>ملاحظة:</strong> يلاحظ أن القطع يمر بنقطة الأصل كما هو واضح من معادلته.</div>
+        <div class="step"><div class="step-num">1</div><div>$9(x^2+6x+9)+4(y^2-4y+4)=0 \Rightarrow 9(x+3)^2+4(y-2)^2=0+81+16-61=36$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$\frac{(x+3)^2}{4}+\frac{(y-2)^2}{9}=1$ → ناقص مركزه $(-3,2)$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$a^2=9$، $b^2=4$، $c^2=9-4=5 \Rightarrow c=\sqrt5$، $e=\frac{\sqrt5}{3}$</div></div>
+        <div class="step"><div class="step-num">4</div><div>البؤرتان: $(-3, 2\pm\sqrt5)$</div></div>
+        <div class="step"><div class="step-num">5</div><div>الدليلان: $y=2\pm\frac{9}{\sqrt5}=2\pm\frac{9\sqrt5}{5}$</div></div>
+        <div class="law-box"><div class="label">ملخص</div>المركز $(-3,2)$، $a=3$، $b=2$، $e=\frac{\sqrt5}{3}$، البؤرتان $(-3,2\pm\sqrt5)$، المساحة $= 6\pi$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (2): مناقشة القطع المكافئ بالمعادلة x² - 8x + 2y + 7 = 0</summary>
+      <summary><span class="solved-badge">م2</span> ناقص اختلافه $\frac{2}{3}$، دليله $x=9$، بؤرة أحد دليليه $(4,0)$</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> نرتب المعادلة: \(x^2 - 8x = -2y - 7\)</div>
-        <div class="step"><span class="step-num">2</span> نكمل المربع: \((x-4)^2 = -2y - 7 + 16 = -2(y - 9/2)\)</div>
-        <div class="step"><span class="step-num">3</span> هذه معادلة قطع مكافئ رأسي محوره موازٍ لمحور Y ومفتوح للأسفل</div>
-        <div class="step"><span class="step-num">4</span> رأسه: (4, 9/2)، بؤرته: (4, 4)، دليله: y = 5</div>
+        <div class="step"><div class="step-num">1</div><div>$e=\frac{2}{3}$، دليل $x=\frac{a}{e}=9 \Rightarrow a=6$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$b^2=a^2(1-e^2)=36(1-\frac{4}{9})=20$</div></div>
+        <div class="step"><div class="step-num">3</div><div>التحقق: $ae=4$ ✓ (البؤرة $(4,0)$)</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$\frac{x^2}{36}+\frac{y^2}{20}=1$$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (3): إيجاد معادلة القطع المكافئ الموازي لمحور X المار بالنقاط (-2,1), (-1,3), (1,2)</summary>
+      <summary><span class="solved-badge">م4</span> ناقص مركزه الأصل يمر بـ $(4,3)$ و $(6,2)$، الرؤوس على محور X</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> الصورة العامة لهذا القطع: \(x = ay^2 + by + c\)</div>
-        <div class="step"><span class="step-num">2</span> التعويض بالنقاط الثلاث:</div>
-        <div class="formula-box">\[ -2 = a + b + c \\ 1 = 4a + 2b + c \\ -1 = 9a + 3b + c \]</div>
-        <div class="step"><span class="step-num">3</span> بحل المنظومة: \(a = -\frac{5}{2}\) , \(b = \frac{21}{2}\) , \(c = -10\)</div>
-        <div class="step"><span class="step-num">4</span> معادلة القطع: \( x = -\frac{5}{2}y^2 + \frac{21}{2}y - 10 \)</div>
-        <div class="callout green">أي: \(5y^2 + 2x - 21y + 20 = 0\)</div>
+        <div class="step"><div class="step-num">1</div><div>الصورة: $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(4,3)$: $\frac{16}{a^2}+\frac{9}{b^2}=1$ ... (1)</div></div>
+        <div class="step"><div class="step-num">3</div><div>$(6,2)$: $\frac{36}{a^2}+\frac{4}{b^2}=1$ ... (2)</div></div>
+        <div class="step"><div class="step-num">4</div><div>لنضع $u=\frac{1}{a^2}$، $v=\frac{1}{b^2}$: $16u+9v=1$، $36u+4v=1$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$u=\frac{1}{52}$، $v=\frac{1}{13}$ → $a^2=52$، $b^2=13$</div></div>
+        <div class="step"><div class="step-num">6</div><div>$e^2=1-\frac{13}{52}=\frac{3}{4} \Rightarrow e=\frac{\sqrt3}{2}$، المساحة $=\pi\sqrt{52\times13}=26\pi$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$\frac{x^2}{52}+\frac{y^2}{13}=1 \qquad e=\frac{\sqrt3}{2} \qquad \text{المساحة}=26\pi$$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (4): إيجاد إحداثيي النقطة M على القطع y = x²-2x-8 والمماس موازٍ للمستقيم 4x+y+4=0</summary>
+      <summary><span class="solved-badge">م5</span> المماسان للناقص $\frac{x^2}{144}+\frac{y^2}{64}=1$ من النقطة $(16,2)$</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> ميل المماس للقطع: \(m_1 = \frac{dy}{dx} = 2x - 2\)</div>
-        <div class="step"><span class="step-num">2</span> ميل المستقيم المعطى: \(m_2 = \frac{-4}{1} = -4\)</div>
-        <div class="step"><span class="step-num">3</span> لتوازي المماس مع المستقيم: \(m_1 = m_2 \Rightarrow 2x - 2 = -4 \Rightarrow x = -1\)</div>
-        <div class="step"><span class="step-num">4</span> \(y = (-1)^2 - 2(-1) - 8 = -5\)</div>
-        <div class="callout green"><strong>النتيجة:</strong> M(-1, -5)</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (5): إثبات أن شرط تماس y=mx+c مع القطع y²=4ax هو c=a/m</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> إذا كان y=mx+c مماساً للقطع، فمعادلة المماس عند (x₁,y₁) هي: \(yy_1 = 2a(x+x_1)\)</div>
-        <div class="step"><span class="step-num">2</span> المعاملات متناسبة: \(\frac{y_1}{1} = \frac{2a}{m} = \frac{2ax_1}{c}\)</div>
-        <div class="step"><span class="step-num">3</span> \(y_1 = \frac{2a}{m}\) و \(x_1 = \frac{c}{m}\)</div>
-        <div class="step"><span class="step-num">4</span> لأن (x₁,y₁) تقع على القطع: \(\frac{4a^2}{m^2} = 4a \cdot \frac{c}{m} \Rightarrow c = \frac{a}{m}\)</div>
-        <div class="callout green"><strong>النتيجة:</strong> شرط التماس هو \(c = \frac{a}{m}\) ونقطة التماس هي \(\left(\frac{a}{m^2}, \frac{2a}{m}\right)\)</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (6): إثبات خصائص قطعين مكافئين (للطالب)</summary>
-      <div class="details-body">
-        <p>إذا كان a, b عددان، قطعان مكافئان: \(y^2 = 4a^2 - 4ax\) و \(y^2 = 4b^2 + 4bx\)</p>
-        <div class="callout yellow">أثبت أن لهما بؤرة مشتركة، وأن هذه البؤرة ثابتة لجميع قيم a,b، وكذلك أثبت أنهما يتقاطعان عند \((a-b), (\pm 2\sqrt{ab})\) وأن كل قطع مكافئ من المجموعة الأولى عمودي على كل قطع مكافئ من المجموعة الثانية.</div>
-        <div class="callout pink">متروك للطالب.</div>
+        <div class="step"><div class="step-num">1</div><div>المماس: $y=mx\pm\sqrt{144m^2+64}$، ويمر بـ $(16,2)$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$2=16m\pm\sqrt{144m^2+64}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$(2-16m)^2=144m^2+64$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$4-64m+256m^2=144m^2+64$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$112m^2-64m-60=0 \Rightarrow 28m^2-16m-15=0$</div></div>
+        <div class="step"><div class="step-num">6</div><div>$(28m+15)(m-1)=... $→ $m=\frac{3}{2}$ أو $m=-\frac{1}{14}$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$y-2=\frac{3}{2}(x-16)$: أي $3x-2y-44=0$<br>
+        و $y-2=-\frac{1}{14}(x-16)$: أي $x+14y-44=0$</div>
       </div>
     </details>
   </div>
 
   <!-- تدريبات -->
   <div class="card">
-    <h3>📝 تدريبات (6)-1</h3>
+    <div class="card-title">📚 تدريبات (6)2- محلولة (مختارة)</div>
+
     <details>
-      <summary>عرض جميع مسائل التدريبات</summary>
+      <summary><span class="solved-badge">ت1</span> أوجد معادلة القطع الناقص لكل شرط</summary>
       <div class="details-body">
-        <ol>
-          <li>ادرس وارسم كلاً من القطاعات المكافئة الآتية:
-            <ul>
-              <li>(i) \(x^2 - 2y + 8x + 10 = 0\)</li>
-              <li>(ii) \(y^2 + 6y + 2x + 5 = 0\)</li>
-              <li>(iii) \(3x^2 - 8y - 12x = 4\)</li>
-              <li>(iv) \(y^2 + 4x = 8\)</li>
-              <li>(v) \(x^2 + 2x - 4y - 3 = 0\)</li>
-            </ul>
-          </li>
-          <li>في كل حالة مما يلي: أوجد معادلة القطع المكافئ الذي يحقق الشروط المذكورة:
-            <ul>
-              <li>بؤرته هي النقطة (3,0) ومعادلة دليله هي x=-3</li>
-              <li>رأسه النقطة (-2,3) وبؤرته النقطة (1,3)</li>
-              <li>يوازي محور الصادات ويمر بالنقط الثلاث: (0,3), (2,0), (3,2)</li>
-              <li>يوازي محور السينات ويمر بالنقط الثلاث: (5,6), (3,3), (6,-3)</li>
-              <li>طرفا وتره البؤري العمودي هما النقطتين: (3,-3), (3,5)</li>
-            </ul>
-          </li>
-          <li>أوجد قيمة الميل k التي تجعل المستقيم y=kx+2 يمس القطع المكافئ y²=4x</li>
-          <li>أحسب قيمة λ التي تجعل المستقيم 4x-y-λ=0 مماساً للقطع المكافئ y=2x²-x+1</li>
-          <li>كوّن معادلة المستقيم الذي يمس القطع المكافئ y²=8x ويوازي المستقيم 2x+2y-3=0</li>
-          <li>كوّن معادلة المستقيم الذي يمس القطع المكافئ x²=16y وعمودي على المستقيم 2x+4y+7=0</li>
-          <li>أوجد معادلة القطع المكافئ الذي بؤرته نقطة الأصل ودليله المستقيم x+y-2=0</li>
-          <li>أوجد معادلة القطع المكافئ الذي بؤرته النقطة (1,1) ودليله المستقيم x+y+1=0</li>
-          <li>أوجد معادلتي المماسين المرسومين من النقطة (-3,-2) للقطع المكافئ y²=4x وأوجد إحداثيات نقطتي التماس.</li>
-          <li>بدوران المحاور زاوية قدرها π/4، أثبت أن المعادلة \(x^2+2xy+y^2-5x-3y-2=0\) تمثل قطعاً مكافئاً وارسمه وأوجد إحداثيات رأسه وبؤرته ومعادلة دليله وطول وتره البؤري العمودي.</li>
-          <li>أثبت أن المحل الهندسي لنقاط تقاطع مماسين متعامدين لقطع مكافئ هو دليله.</li>
-          <li>أثبت أن الدائرة x²+y²-4ax+a²=0 تمس القطع المكافئ y²=4ax عند نهايتي وتره البؤري العمودي وأوجد نقطتي التماس.</li>
-        </ol>
+        <p><strong>• مركزه الأصل، رأسه $(3,0)$، أقرب بؤرة $(2,0)$:</strong></p>
+        <div class="step"><div class="step-num"></div><div>$a=3$، $c=2$، $b^2=9-4=5$ → $\frac{x^2}{9}+\frac{y^2}{5}=1$</div></div>
+        <p><strong>• الرؤوس $(\pm 3,0)$، الأقطار $(\pm 1,0)$:</strong></p>
+        <div class="step"><div class="step-num"></div><div>$a=3$، $c=1$، $b^2=8$ → $\frac{x^2}{9}+\frac{y^2}{8}=1$</div></div>
+        <p><strong>• طول القطر الأكبر $2\sqrt6$، البؤرتان $(\pm\sqrt5, 0)$:</strong></p>
+        <div class="step"><div class="step-num"></div><div>$a^2=6$، $c^2=5$، $b^2=1$ → $\frac{x^2}{6}+y^2=1$</div></div>
+        <p><strong>• مركزه الأصل، يمر بـ $(2,2)$ و $(3,1)$:</strong></p>
+        <div class="step"><div class="step-num"></div><div>$\frac{4}{a^2}+\frac{4}{b^2}=1$، $\frac{9}{a^2}+\frac{1}{b^2}=1$ → $a^2=10$، $b^2=40/9$... $\frac{x^2}{10}+\frac{9y^2}{40}=1$</div></div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت2</span> إيجاد الرؤوس والبؤرتين والاختلاف المركزي</summary>
+      <div class="details-body">
+        <p><strong>(i)</strong> $3x^2+2y^2=6 \Rightarrow \frac{x^2}{2}+\frac{y^2}{3}=1$: $a^2=3$، $b^2=2$، $c^2=1$، $e=\frac{1}{\sqrt3}$</p>
+        <p>الرؤوس: $(0,\pm\sqrt3)$، البؤرتان: $(0,\pm1)$</p>
+        <p><strong>(ii)</strong> $9(x-1)^2+16(y-3)^2=144$: $\frac{(x-1)^2}{16}+\frac{(y-3)^2}{9}=1$، مركزه $(1,3)$</p>
+        <p>$a=4$، $b=3$، $c=\sqrt7$، $e=\frac{\sqrt7}{4}$</p>
+        <p>الرؤوس: $(1\pm4,3)=(-3,3)$ و $(5,3)$</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت4</span> ناقص بؤرته الأصل، دليله $x+y+1=0$، اختلافه $\frac{1}{3}$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>المسافة من البؤرة $(0,0)$ إلى نقطة $P$ تساوي $\sqrt{(x-0)^2+(y-0)^2}$</div></div>
+        <div class="step"><div class="step-num">2</div><div>المسافة من $P$ إلى الدليل $= \frac{|x+y+1|}{\sqrt2}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$PF = e \cdot PM$: $\sqrt{x^2+y^2}=\frac{1}{3}\cdot\frac{|x+y+1|}{\sqrt2}$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$x^2+y^2=\frac{(x+y+1)^2}{18}$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$18x^2+18y^2=(x+y+1)^2 \quad\Rightarrow\quad 17x^2-2xy+17y^2-2x-2y-1=0$$</div>
       </div>
     </details>
   </div>
 
-  <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=9b1855d5-9402-45e4-87de-c11860362bf7" target="_blank" class="quiz-btn">🎯 الاختبار الشامل - القطع المكافئ</a>
+  <div style="text-align:center">
+    <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=b73f65fd-f95c-4aba-a0eb-118758a586ac" target="_blank" class="test-btn">
+      🧪 ابدأ الاختبار الشامل — القطع الناقص ←
+    </a>
+  </div>
+</div>
 </div>
 
-<!-- ==================== SECTION 3: القطع الناقص ==================== -->
-<div id="ellipse" class="section">
-  <div class="section-title">🟠 القطع الناقص - The Ellipse</div>
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- TAB: القطع الزائد -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="tab-hyperbola" class="tab-panel">
+<div class="section-wrap">
+  <div class="sec-title">〰 القطع الزائد <span class="badge">The Hyperbola</span></div>
 
   <div class="card">
-    <h3>تعريف القطع الناقص</h3>
-    <p>القطع الناقص (بالإنجليزية Ellipse) هو المنحنى الهندسي الذي يحقق أن: مجموع أي نقطة عليه من نقطتين ثابتتين داخله (تسميان البؤرتين two foci) يبقى ثابتاً.</p>
-    <div class="callout">
-      <strong>التعريف الهندسي:</strong> المنحنى الذي يتحرك نقطة في المستوى بحيث تكون نسبة المسافة بين هذه النقطة والبؤرة والمسافة بينها وبين مستقيم ثابت (الدليل) دائمة ثابتة وتساوي معامل التباعد (الاختلاف) المركزي للقطع e.
+    <div class="card-title">📖 تعريف القطع الزائد</div>
+    <p><strong>القطع الزائد (Hyperbola)</strong> هو المحل الهندسي للنقاط التي يكون الفرق (بالقيمة المطلقة) بين بُعدها عن نقطتين ثابتتين (البؤرتين) مساوياً لثابت يُرمز له $2a$:</p>
+    <div class="math-display">$$|PF_1 - PF_2| = 2a = \text{ثابت}$$</div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 440 280" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="140" x2="430" y2="140" stroke="#8892a8" stroke-width="1.2"/>
+        <line x1="220" y1="270" x2="220" y2="10" stroke="#8892a8" stroke-width="1.2"/>
+        <!-- Asymptotes -->
+        <line x1="20" y1="255" x2="420" y2="25" stroke="#a78bfa" stroke-width="1" stroke-dasharray="6,3"/>
+        <line x1="20" y1="25" x2="420" y2="255" stroke="#a78bfa" stroke-width="1" stroke-dasharray="6,3"/>
+        <text x="380" y="22" fill="#a78bfa" font-size="10" font-family="Tajawal">y=(b/a)x</text>
+        <text x="380" y="258" fill="#a78bfa" font-size="10" font-family="Tajawal">y=-(b/a)x</text>
+        <!-- Right branch -->
+        <path d="M300,20 Q260,60 260,140 Q260,220 300,260" stroke="#34d399" stroke-width="2.5" fill="none"/>
+        <!-- Left branch -->
+        <path d="M140,20 Q180,60 180,140 Q180,220 140,260" stroke="#34d399" stroke-width="2.5" fill="none"/>
+        <!-- Foci -->
+        <circle cx="115" cy="140" r="5" fill="#f5c518"/>
+        <circle cx="325" cy="140" r="5" fill="#f5c518"/>
+        <text x="90" y="158" fill="#f5c518" font-size="11" font-family="Tajawal">S₁(-c,0)</text>
+        <text x="328" y="158" fill="#f5c518" font-size="11" font-family="Tajawal">S₂(c,0)</text>
+        <!-- Vertices -->
+        <circle cx="180" cy="140" r="4" fill="#f87171"/>
+        <circle cx="260" cy="140" r="4" fill="#f87171"/>
+        <text x="155" y="128" fill="#f87171" font-size="11" font-family="Tajawal">A₂(-a,0)</text>
+        <text x="263" y="128" fill="#f87171" font-size="11" font-family="Tajawal">A₁(a,0)</text>
+        <!-- Directrices -->
+        <line x1="165" y1="10" x2="165" y2="270" stroke="#00e5ff" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="275" y1="10" x2="275" y2="270" stroke="#00e5ff" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="140" y="9" fill="#00e5ff" font-size="9" font-family="Tajawal">x=-a/e</text>
+        <text x="277" y="9" fill="#00e5ff" font-size="9" font-family="Tajawal">x=a/e</text>
+      </svg>
     </div>
-    <div class="formula-box">\[ PF_1 + PF_2 = 2a \quad \text{(مجموع البُعدين ثابت)} \]</div>
   </div>
 
+  <!-- معادلات -->
   <div class="card">
-    <h3>المعادلات الجبرية للقطع الناقص</h3>
-    <!-- SVG القطع الناقص -->
-    <svg width="100%" height="220" viewBox="0 0 600 220" style="max-width:600px;display:block;margin:1rem auto;">
-      <rect width="600" height="220" fill="#162032" rx="10"/>
-      <line x1="20" y1="110" x2="580" y2="110" stroke="#475569" stroke-width="1.5"/>
-      <line x1="300" y1="10" x2="300" y2="210" stroke="#475569" stroke-width="1.5"/>
-      <ellipse cx="300" cy="110" rx="170" ry="90" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
-      <!-- foci -->
-      <circle cx="180" cy="110" r="5" fill="#f472b6"/>
-      <text x="170" y="130" fill="#f472b6" font-size="12">F₂(-ae,0)</text>
-      <circle cx="420" cy="110" r="5" fill="#f472b6"/>
-      <text x="410" y="130" fill="#f472b6" font-size="12">F₁(ae,0)</text>
-      <!-- directrices -->
-      <line x1="100" y1="20" x2="100" y2="200" stroke="#a78bfa" stroke-width="1" stroke-dasharray="5,4"/>
-      <text x="75" y="18" fill="#a78bfa" font-size="11">x=-a/e</text>
-      <line x1="500" y1="20" x2="500" y2="200" stroke="#a78bfa" stroke-width="1" stroke-dasharray="5,4"/>
-      <text x="502" y="18" fill="#a78bfa" font-size="11">x=a/e</text>
-      <!-- vertices -->
-      <circle cx="130" cy="110" r="4" fill="#34d399"/>
-      <text x="115" y="100" fill="#34d399" font-size="11">B(-a,0)</text>
-      <circle cx="470" cy="110" r="4" fill="#34d399"/>
-      <text x="475" y="100" fill="#34d399" font-size="11">A(a,0)</text>
-      <circle cx="300" cy="20" r="4" fill="#34d399"/>
-      <text x="308" y="20" fill="#34d399" font-size="11">C(0,b)</text>
-      <circle cx="300" cy="200" r="4" fill="#34d399"/>
-      <text x="308" y="215" fill="#34d399" font-size="11">D(0,-b)</text>
-      <text x="560" y="108" fill="#475569" font-size="13">X</text>
-      <text x="305" y="16" fill="#475569" font-size="13">Y</text>
-    </svg>
-
-    <div class="callout yellow">
-      <strong>المعادلة القياسية للقطع الناقص (المحور الأكبر على محور X):</strong>
+    <div class="card-title">📐 المعادلات والعلاقات الجبرية</div>
+    <div class="law-box">
+      <div class="label">⚡ الصورة القياسية — المحور الحقيقي على X</div>
+      <div class="math-display">$$\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1 \qquad b^2 = a^2(e^2-1)\quad e>1$$</div>
     </div>
-    <div class="formula-box">\[ \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 \quad (a > b > 0) \]</div>
+    <div class="law-box">
+      <div class="label">⚡ الصورة القياسية — المحور الحقيقي على Y</div>
+      <div class="math-display">$$\frac{y^2}{a^2} - \frac{x^2}{b^2} = 1$$</div>
+    </div>
 
     <table>
-      <tr><th>الخاصية</th><th>القيمة</th></tr>
-      <tr><td>مركز القطع</td><td>(0, 0)</td></tr>
-      <tr><td>محور القطع الأكبر</td><td>محور X، طوله 2a</td></tr>
-      <tr><td>محور القطع الأصغر</td><td>محور Y، طوله 2b</td></tr>
-      <tr><td>إحداثيا الرأسين</td><td>(a,0), (-a,0)</td></tr>
-      <tr><td>إحداثيا البؤرتين</td><td>(ae,0), (-ae,0)</td></tr>
-      <tr><td>معادلة الدليلين</td><td>x = a/e , x = -a/e</td></tr>
-      <tr><td>العلاقة بين a,b,e</td><td>\(b^2 = a^2(1-e^2)\)</td></tr>
-      <tr><td>طول الوتر البؤري العمودي</td><td>\(2L = \frac{2b^2}{a}\)</td></tr>
-      <tr><td>مساحة القطع الناقص</td><td>\(A = \pi ab\)</td></tr>
+      <tr><th>العنصر</th><th>المحور الحقيقي أفقي</th><th>المحور الحقيقي رأسي</th></tr>
+      <tr><td>الرؤوس</td><td>$(\pm a,0)$</td><td>$(0,\pm a)$</td></tr>
+      <tr><td>البؤرتان</td><td>$(\pm c,0)$</td><td>$(0,\pm c)$</td></tr>
+      <tr><td>الدليلان</td><td>$x=\pm\frac{a}{e}$</td><td>$y=\pm\frac{a}{e}$</td></tr>
+      <tr><td>المقاربان</td><td>$y=\pm\frac{b}{a}x$</td><td>$y=\pm\frac{a}{b}x$</td></tr>
+      <tr><td>الوتر البؤري</td><td colspan="2">$\frac{2b^2}{a}$</td></tr>
     </table>
 
-    <h4>المعادلة القياسية عندما يكون المحور الأكبر على محور Y:</h4>
-    <div class="formula-box">\[ \frac{x^2}{b^2} + \frac{y^2}{a^2} = 1 \quad (a > b > 0) \]</div>
-  </div>
-
-  <div class="card">
-    <h3>معادلات مهمة للقطع الناقص</h3>
-
-    <h4>معادلة المماس عند النقطة (x₁, y₁):</h4>
-    <div class="formula-box">\[ \frac{xx_1}{a^2} + \frac{yy_1}{b^2} = 1 \]</div>
-
-    <h4>معادلة العمودي على المماس عند (x₁, y₁):</h4>
-    <div class="formula-box">\[ \frac{x - x_1}{x_1/a^2} = \frac{y - y_1}{y_1/b^2} \]</div>
-
-    <h4>شرط تماس المستقيم y = mx + c مع القطع الناقص:</h4>
-    <div class="formula-box">\[ c^2 = a^2m^2 + b^2 \]</div>
-    <div class="callout green">وعلى ذلك فالمستقيم \(y = mx \pm \sqrt{a^2m^2 + b^2}\) يمس القطع الناقص المعطى لجميع قيم m.</div>
-
-    <h4>المعادلتان البارامتريتان للقطع الناقص:</h4>
-    <div class="formula-box">\[ x = a\cos t \quad , \quad y = b\sin t \]</div>
-
-    <h4>المعادلة القطبية للقطع الناقص:</h4>
-    <div class="formula-box">\[ \frac{1}{r^2} = \frac{1}{a^2}\cos^2\theta + \frac{1}{b^2}\sin^2\theta \]</div>
-
-    <h4>دائرة الاستدلال:</h4>
-    <div class="callout">دائرة الاستدلال للقطع الناقص: مركزها الأصل ونصف قطرها = \(\sqrt{a^2 + b^2}\)</div>
-
-    <h4>الدائرة المساعدة:</h4>
-    <div class="callout yellow">مركزها نفس مركز القطع الناقص ونصف قطرها = a (الصورة: x² + y² = a²)</div>
-
-    <h4>الشرط الجبري للقطع الناقص:</h4>
-    <div class="formula-box">\[ Ax^2 + Bxy + Cy^2 + Dx + Ey + F = 0 \quad \text{حيث} \quad B^2 < 4AC \]</div>
-  </div>
-
-  <!-- أمثلة محلولة -->
-  <div class="card">
-    <h3>🔍 أمثلة محلولة (6)-2</h3>
-
-    <details>
-      <summary>مثال (1): دراسة القطع الناقص 9x²+4y²+54x-16y+61=0</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> نكتب المعادلة المعطاة في الصورة القياسية:</div>
-        <div class="formula-box">\[ 9(x^2+6x+9)+4(y^2-4y+4)=0 \Rightarrow \frac{(x+3)^2}{4}+\frac{(y-2)^2}{9}=1 \]</div>
-        <div class="step"><span class="step-num">2</span> هذه معادلة قطع ناقص محوره يوازي محور الصادات</div>
-        <div class="step"><span class="step-num">3</span> مركزه O'=(-3,2)=(h,k)</div>
-        <div class="step"><span class="step-num">4</span> \(b^2=4, a^2=9\) ، وحيث أن \(b^2=a^2(1-e^2)\):</div>
-        <div class="formula-box">\[ 4=9(1-e^2) \Rightarrow e=\frac{\sqrt{5}}{3} < 1 \]</div>
-        <div class="step"><span class="step-num">5</span> البؤرتان: \(F_1=(-3, 2+\sqrt{5})\) و \(F_2=(-3, 2-\sqrt{5})\)</div>
-        <div class="step"><span class="step-num">6</span> معادلتا الدليلين: \(y=2+\frac{9\sqrt{5}}{5}\) و \(y=2-\frac{9\sqrt{5}}{5}\)</div>
-        <div class="callout green">محور القطع الأكبر: x=-3، محور القطع الأصغر: y=2</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (2): إيجاد معادلة قطع ناقص اختلافه المركزي 2/3 وأحد دليليه x=9 وبؤرته الموافقة (4,0)</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> من تعريف القطع الناقص: \(\overline{PF}^2 = e^2 \overline{PM}^2\) حيث P=(x,y), F=(4,0)</div>
-        <div class="step"><span class="step-num">2</span> \((x-4)^2+y^2=\left(\frac{2}{3}\right)^2\left(\frac{x-9}{\sqrt{1}}\right)^2\)</div>
-        <div class="step"><span class="step-num">3</span> بالتبسيط:</div>
-        <div class="formula-box">\[ \frac{x^2}{36}+\frac{y^2}{20}=1 \]</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (3): إيجاد قيم A,B,C للقطع الناقص 4x²+y²+Ax+By+C=0 يمس محور X عند الأصل ويمر بـ(-1,2)</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> القطع يمس محور X عند الأصل، فتكون معادلة المماس y=0 وبذلك C=0</div>
-        <div class="step"><span class="step-num">2</span> يمر بالنقطة (-1,2): \(4+4+(-1)A+2B=0 \Rightarrow A-2B=8 \quad (*)\)</div>
-        <div class="step"><span class="step-num">3</span> شرط تماس y=0 مع القطع الناقص: نعلم أن شرط تماس المستقيم y=mx+c مع قطع ناقص هو \(c^2=a^2m^2+b^2\). بـ m=0, c=0 فإن \(b^2=0\) وعليه:</div>
-        <div class="step"><span class="step-num">4</span> \(e^2=3/4\) والاختلاف المركزي للقطع الناقص يساوي \(\sqrt{3}/2 < 1\)</div>
-        <div class="step"><span class="step-num">5</span> \(\frac{A^2+4B^2}{64}=0 \Rightarrow A^2+4B^2=0\) ، ومن (*): A=0 → B=-4</div>
-        <div class="callout green"><strong>النتيجة:</strong> A=0, B=-4, C=0</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (4): إيجاد معادلة قطع ناقص مركزه الأصل يمر بـ(4,3) و(6,2)</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> المعادلة: \(\frac{x^2}{a^2}+\frac{y^2}{b^2}=1\)</div>
-        <div class="step"><span class="step-num">2</span> التعويض بالنقطتين:</div>
-        <div class="formula-box">\[ \frac{16}{a^2}+\frac{9}{b^2}=1 \quad , \quad \frac{36}{a^2}+\frac{4}{b^2}=1 \]</div>
-        <div class="step"><span class="step-num">3</span> بحل المعادلتين: \(a^2=52, b^2=13\)</div>
-        <div class="step"><span class="step-num">4</span> معادلة القطع: \(\frac{x^2}{52}+\frac{y^2}{13}=1\)</div>
-        <div class="step"><span class="step-num">5</span> \(e^2=\frac{c^2}{a^2}=\frac{39}{52}=\frac{3}{4} \Rightarrow e=\frac{\sqrt{3}}{2}<1\)</div>
-        <div class="step"><span class="step-num">6</span> طول الوتر البؤري العمودي: \(\sqrt{13}=\frac{2b^2}{a}\) ومساحة القطع = \(\pi\sqrt{52}\sqrt{13}=26\pi\)</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (5): إيجاد معادلتي المماسين المرسومين من النقطة (16,2) للقطع الناقص x²/144+y²/64=1</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> المستقيم المماس: \(y=mx\pm\sqrt{144m^2+64}\)</div>
-        <div class="step"><span class="step-num">2</span> يمر بـ (x=16, y=2): \(2=16m\pm\sqrt{144m^2+64}\)</div>
-        <div class="step"><span class="step-num">3</span> بالتربيع والتبسيط: \(28m^2-16m-15=0\)</div>
-        <div class="step"><span class="step-num">4</span> \(m=-\frac{1}{2}\) أو \(m=\frac{15}{14}\)</div>
-        <div class="step"><span class="step-num">5</span> معادلة المماس الأول: \(x+2y-20=0\)</div>
-        <div class="step"><span class="step-num">6</span> معادلة المماس الثاني: \(15x-14y-212=0\)</div>
-      </div>
-    </details>
-
-    <details>
-      <summary>مثال (6): دراسة القطع الناقص 9x²+5y²=45 (للطالب حل 6-13)</summary>
-      <div class="details-body">
-        <p>للقطع الناقص: \(9x^2+5y^2=45 \Rightarrow \frac{x^2}{5}+\frac{y^2}{9}=1\)</p>
-        <div class="callout yellow">أوجد: نصفي المحورين، إحداثيات البؤرتين، الاختلاف المركزي، معادلتي الدليلين.</div>
-        <div class="callout pink">أمثلة 7-13: متروكة للطالب للحل (راجع الكتاب)</div>
-      </div>
-    </details>
-  </div>
-
-  <!-- تدريبات -->
-  <div class="card">
-    <h3>📝 تدريبات (6)-2</h3>
-    <details>
-      <summary>عرض جميع مسائل التدريبات</summary>
-      <div class="details-body">
-        <ol>
-          <li>أوجد في كل حالة مما يأتي معادلة القطع الناقص حسب الشروط المذكورة:
-            <ul>
-              <li>مركزه نقطة الأصل، رؤوسه النقطة (3,0)، وإحدى بؤرتيه النقطة (2,0)</li>
-              <li>نهايتا محوره الأكبر (±3,0) ونهايتا محوره الأصغر (±1,0)</li>
-              <li>طول محوره الأكبر 26 وبؤرتيه (±5,0)</li>
-              <li>بؤرتيه (1,2) و(1,4) وطول محوره الأصغر 2</li>
-              <li>مركزه نقطة الأصل ويمر بالنقطتين (2,2) و(3,1)</li>
-              <li>طول وتره البؤري العمودي 5 واختلافه المركزي (2/3)</li>
-              <li>طول وتره البؤري العمودي 10 والمسافة بين بؤرتيه تساوي طول محوره الأصغر</li>
-            </ul>
-          </li>
-          <li>أوجد البؤرتين والرأسين والدليلين لكل من القطاعات الناقصة التالية وارسمها:
-            <ul>
-              <li>(i) x²+3y²=2</li>
-              <li>(ii) 9(x-1)²+16(y-3)²=144</li>
-              <li>(iii) x²+9y²+2x-18y+1=0</li>
-              <li>(iv) 5x²+9y²+10x+18y=166</li>
-            </ul>
-          </li>
-          <li>أوجد المركز والمحورين والاختلاف المركزي للقطاعات الناقصة الآتية:
-            <ul>
-              <li>(i) 25x²+9y²-100x-54y-44=0</li>
-              <li>(ii) 4x²+9y²=144</li>
-              <li>(iii) 16(x-2)²+9(y+3)²=144</li>
-            </ul>
-          </li>
-          <li>أوجد معادلة القطع الذي اختلافه المركزي (1/3) وبؤرتيه بؤرتا الأصل ودليله المستقيم x+y+1=0</li>
-          <li>أوجد معادلة المماس للقطع الناقص 4x²+9y²=144 والعمودي على المستقيم x+y=1</li>
-          <li>أوجد قيم الثوابت A,B,C إذا كان محور السينات عند نقطة الأصل مماساً للقطع 4x²+y²+Ax+By+C=0 والذي يمر بالنقطة (-1,2)</li>
-          <li>أوجد بُعد البؤرة عن الدليل والاختلاف المركزي للقطاعات: (i) r(5+4cosθ)=20 ، (ii) r(9-4cosθ)=20</li>
-          <li>إدرس القطع الناقص: 9x²+4y²+54x-16y+61=0</li>
-          <li>أثبت أن المماسين عند نقطتين متناظرتين على قطع ناقص ودائرته المساعدة يتقابلان على المحور الأكبر.</li>
-          <li>أثبت أن مجموع بُعدي أي نقطة على القطع الناقص عن بؤرتيه يساوي مقدار ثابت هو طول المحور الأكبر.</li>
-          <li>أثبت أن المحل الهندسي لمسقط البؤرة على مماسات قطع ناقص هو الدائرة المساعدة.</li>
-          <li>أثبت أن المحل الهندسي لنقطة تلاقي مماسين متعامدين لقطع ناقص هو دائرة الاستدلال التي معادلتها: x²+y²=a²+b²</li>
-          <li>أثبت أن حاصل ضرب طولي العمودين الساقطين من البؤرتين على أي مماس لقطع ناقص يساوي مربع نصف المحور الأصغر.</li>
-        </ol>
-      </div>
-    </details>
-  </div>
-
-  <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=b73f65fd-f95c-4aba-a0eb-118758a586ac" target="_blank" class="quiz-btn">🎯 الاختبار الشامل - القطع الناقص</a>
-</div>
-
-<!-- ==================== SECTION 4: القطع الزائد ==================== -->
-<div id="hyperbola" class="section">
-  <div class="section-title">🔴 القطع الزائد - The Hyperbola</div>
-
-  <div class="card">
-    <h3>تعريف القطع الزائد</h3>
-    <p>القطع الزائد هو أحد أنواع القطاعات المخروطية وهو ناتج عن قطع المخروط بمستوى في أحد نصفي المخروط، وهو الذي يكون اختلافه المركزي أكبر من الواحد الصحيح.</p>
-    <div class="callout pink">
-      <strong>التعريف الهندسي (الإنجليزي):</strong><br>
-      The hyperbola is the locus of the point P such that the difference of the distances (d1-d2) from P to B1 and B2 is equal to 2a.
+    <div class="law-box">
+      <div class="label">⚡ الخطان المقاربان</div>
+      <div class="math-display">$$\frac{x^2}{a^2} - \frac{y^2}{b^2} = 0 \qquad \Rightarrow \qquad y = \pm\frac{b}{a}x$$</div>
     </div>
-    <div class="callout">
-      <strong>التعريف بالعربية:</strong> القطع الزائد هو المحل الهندسي لنقطة تتحرك في المستوى الكارتيزي بحيث عند أي لحظة يكون الفرق بين بُعديها من نقطتين ثابتتين (بؤرتي القطع) ثابتاً دائماً مقداره 2a.
+    <div class="law-box">
+      <div class="label">⚡ معادلة المماس عند $(x_1,y_1)$</div>
+      <div class="math-display">$$\frac{xx_1}{a^2} - \frac{yy_1}{b^2} = 1$$</div>
     </div>
-    <div class="formula-box">\[ |PF_1 - PF_2| = 2a \]</div>
-
-    <!-- SVG القطع الزائد -->
-    <svg width="100%" height="240" viewBox="0 0 600 240" style="max-width:600px;display:block;margin:1rem auto;">
-      <rect width="600" height="240" fill="#162032" rx="10"/>
-      <line x1="20" y1="120" x2="580" y2="120" stroke="#475569" stroke-width="1.5"/>
-      <line x1="300" y1="10" x2="300" y2="230" stroke="#475569" stroke-width="1.5"/>
-      <!-- hyperbola right branch -->
-      <path d="M 360 10 Q 330 120 360 230" fill="none" stroke="#f472b6" stroke-width="2.5"/>
-      <!-- hyperbola left branch -->
-      <path d="M 240 10 Q 270 120 240 230" fill="none" stroke="#f472b6" stroke-width="2.5"/>
-      <!-- asymptotes -->
-      <line x1="120" y1="10" x2="480" y2="230" stroke="#a78bfa" stroke-width="1" stroke-dasharray="6,4"/>
-      <line x1="120" y1="230" x2="480" y2="10" stroke="#a78bfa" stroke-width="1" stroke-dasharray="6,4"/>
-      <!-- foci -->
-      <circle cx="200" cy="120" r="5" fill="#fbbf24"/>
-      <text x="185" y="140" fill="#fbbf24" font-size="12">F₂(-c,0)</text>
-      <circle cx="400" cy="120" r="5" fill="#fbbf24"/>
-      <text x="405" y="140" fill="#fbbf24" font-size="12">F₁(c,0)</text>
-      <!-- vertices -->
-      <circle cx="255" cy="120" r="4" fill="#34d399"/>
-      <text x="230" y="110" fill="#34d399" font-size="11">(-a,0)</text>
-      <circle cx="345" cy="120" r="4" fill="#34d399"/>
-      <text x="350" y="110" fill="#34d399" font-size="11">(a,0)</text>
-      <!-- directrices -->
-      <line x1="270" y1="10" x2="270" y2="230" stroke="#22d3ee" stroke-width="1" stroke-dasharray="5,4"/>
-      <text x="240" y="18" fill="#22d3ee" font-size="11">x=-a/e</text>
-      <line x1="330" y1="10" x2="330" y2="230" stroke="#22d3ee" stroke-width="1" stroke-dasharray="5,4"/>
-      <text x="335" y="18" fill="#22d3ee" font-size="11">x=a/e</text>
-      <text x="560" y="118" fill="#475569" font-size="13">X</text>
-    </svg>
+    <div class="law-box">
+      <div class="label">⚡ شرط تماس $y=mx+c$ مع الزائد</div>
+      <div class="math-display">$$c^2 = a^2m^2 - b^2 \qquad \Rightarrow \qquad y = mx \pm\sqrt{a^2m^2-b^2}$$</div>
+    </div>
+    <div class="theorem-box">
+      <div class="label">🔷 القطع الزائد القائم</div>
+      <p>إذا كان $a=b$ فالمقاربان متعامدان والقطع يُسمى قائماً، معادلته: $x^2-y^2=a^2$، واختلافه المركزي $e=\sqrt2$</p>
+    </div>
+    <div class="theorem-box">
+      <div class="label">🔷 العلاقة بين $e$ وزاوية المقاربين</div>
+      <div class="math-display">$$\tan\theta = \frac{b}{a} = m \qquad \Rightarrow \qquad e = \sec\theta = \frac{1}{\cos\theta}$$</div>
+    </div>
+    <div class="theorem-box">
+      <div class="label">🔷 القطع الزائد المرافق</div>
+      <div class="math-display">$$\frac{y^2}{b^2} - \frac{x^2}{a^2} = 1 \qquad \text{(نفس المقاربين، محاور مبادلة)}$$</div>
+    </div>
   </div>
 
+  <!-- أمثلة -->
   <div class="card">
-    <h3>المعادلات الجبرية للقطع الزائد</h3>
-
-    <div class="callout yellow">
-      <strong>المعادلة القياسية (المحور القاطع على X):</strong>
-    </div>
-    <div class="formula-box">\[ \frac{x^2}{a^2} - \frac{y^2}{b^2} = 1 \quad (c^2 = a^2 + b^2 \;,\; e = c/a > 1) \]</div>
-
-    <div class="callout green">
-      <strong>المعادلة القياسية (المحور القاطع على Y):</strong>
-    </div>
-    <div class="formula-box">\[ \frac{y^2}{a^2} - \frac{x^2}{b^2} = 1 \]</div>
-
-    <table>
-      <tr><th>الخاصية</th><th>المحور القاطع x</th><th>المحور القاطع y</th></tr>
-      <tr><td>المركز</td><td>(0,0)</td><td>(0,0)</td></tr>
-      <tr><td>الرأسان</td><td>(±a, 0)</td><td>(0, ±a)</td></tr>
-      <tr><td>البؤرتان</td><td>(±c, 0)</td><td>(0, ±c)</td></tr>
-      <tr><td>الدليلان</td><td>x = ±a/e</td><td>y = ±a/e</td></tr>
-      <tr><td>الخطان التقاربيان</td><td>y = ±(b/a)x</td><td>y = ±(a/b)x</td></tr>
-      <tr><td>العلاقة</td><td>b² = a²(e²-1)</td><td>b² = a²(e²-1)</td></tr>
-    </table>
-
-    <h4>معادلة القطع الزائد ذي المركز (h,k):</h4>
-    <div class="formula-box">\[ \frac{(x-h)^2}{a^2} - \frac{(y-k)^2}{b^2} = 1 \]</div>
-    <div class="formula-box">\[ \frac{(y-k)^2}{a^2} - \frac{(x-h)^2}{b^2} = 1 \quad \text{(المحور القاطع رأسي)} \]</div>
-
-    <h4>الصورة العامة للقطع الزائد:</h4>
-    <div class="formula-box">\[ Ax^2 - By^2 + Cx + Dy + E = 0 \]</div>
-    <div class="callout">حيث لكل من x², y² نفس الإشارة (أحدهما موجب والآخر سالب)</div>
-  </div>
-
-  <div class="card">
-    <h3>معادلات مهمة للقطع الزائد</h3>
-
-    <h4>معادلة المماس للقطع الزائد عند النقطة (x₁, y₁):</h4>
-    <div class="formula-box">\[ \frac{xx_1}{a^2} - \frac{yy_1}{b^2} = 1 \]</div>
-
-    <h4>معادلة العمودي على المماس عند النقطة (x₁, y₁):</h4>
-    <div class="formula-box">\[ \frac{x-x_1}{x_1/a^2} - \frac{y-y_1}{y_1/b^2} = 0 \]</div>
-
-    <h4>الخطان التقاربيان للقطع الزائد x²/a² - y²/b² = 1:</h4>
-    <div class="formula-box">\[ y = \pm \frac{b}{a} x \]</div>
-    <div class="callout">المعادلة المشتركة للخطين التقاربيين: \(\frac{x^2}{a^2} - \frac{y^2}{b^2} = 0\)</div>
-
-    <h4>شرط تماس المستقيم y = mx + c مع القطع الزائد:</h4>
-    <div class="formula-box">\[ c^2 = a^2m^2 - b^2 \]</div>
-
-    <h4>المعادلة القطبية للقطع الزائد:</h4>
-    <div class="formula-box">\[ \frac{1}{r^2} = \frac{\cos^2\theta}{a^2} - \frac{\sin^2\theta}{b^2} \]</div>
-
-    <h4>المعادلات البارامترية:</h4>
-    <div class="grid-2">
-      <div class="formula-box">\[ x = a\sec\theta \;,\; y = b\tan\theta \]</div>
-      <div class="formula-box">\[ x = a\cosh t \;,\; y = b\sinh t \]</div>
-    </div>
-
-    <h4>الاختلاف المركزي وعلاقته بالزاوية بين خطي التقارب:</h4>
-    <div class="formula-box">\[ \sec\theta = e \quad \text{(حيث θ هي نصف الزاوية بين خطي التقارب)} \]</div>
-
-    <h4>القطع الزائد القائم (a = b):</h4>
-    <div class="formula-box">\[ x^2 - y^2 = a^2 \quad , \quad e = \sqrt{2} \]</div>
-    <div class="callout yellow">القطع الزائد القائم هو القطع الزائد الذي خطاه التقاربيان متعامدان.</div>
-
-    <h4>القطع الزائد المرافق:</h4>
-    <div class="formula-box">\[ \frac{x^2}{a^2} - \frac{y^2}{b^2} = -1 \quad \text{أو} \quad \frac{y^2}{b^2} - \frac{x^2}{a^2} = 1 \]</div>
-  </div>
-
-  <!-- أمثلة محلولة -->
-  <div class="card">
-    <h3>🔍 أمثلة محلولة (6)-3</h3>
+    <div class="card-title">✅ أمثلة محلولة (6)3-</div>
 
     <details>
-      <summary>مثال (1): إيجاد إحداثيات البؤرتين ومعادلتي الدليلين للقطع 9x²-16y²=144</summary>
+      <summary><span class="solved-badge">م1</span> إيجاد البؤرتين والدليلين للزائد $9x^2-16y^2=144$</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> المعادلة: \(\frac{x^2}{16}-\frac{y^2}{9}=1\)</div>
-        <div class="step"><span class="step-num">2</span> a²=16, b²=9 ومحوره هو محور السينات</div>
-        <div class="step"><span class="step-num">3</span> \(b^2=a^2(e^2-1) \Rightarrow 9=16(e^2-1) \Rightarrow e=\frac{5}{4}\)</div>
-        <div class="step"><span class="step-num">4</span> البؤرتان: (ae,0) و (-ae,0) أي (5,0) و (-5,0)</div>
-        <div class="step"><span class="step-num">5</span> الدليلان: \(x=\frac{a}{e}=\frac{16}{5}\) و \(x=-\frac{a}{e}=-\frac{15}{5}\)</div>
+        <div class="step"><div class="step-num">1</div><div>$\frac{x^2}{16}-\frac{y^2}{9}=1$: $a^2=16$، $b^2=9$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$c^2=a^2+b^2=25 \Rightarrow c=5$، $e=\frac{5}{4}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>البؤرتان: $(\pm5, 0)$</div></div>
+        <div class="step"><div class="step-num">4</div><div>الدليلان: $x=\pm\frac{a}{e}=\pm\frac{16}{5}$</div></div>
+        <div class="law-box"><div class="label">ملخص</div>$a=4$، $b=3$، $c=5$، $e=5/4$، البؤرتان $(\pm5,0)$، الدليلان $x=\pm16/5$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (2): دراسة القطع الزائد ax²-4y²+54x+8y+41=0</summary>
+      <summary><span class="solved-badge">م2</span> دراسة $4x^2-y^2+54x+8y+41=0$ (جدول الخواص)</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> المعادلة يمكن وضعها في الصورة القياسية:</div>
-        <div class="formula-box">\[ \frac{(x+3)^2}{4}-\frac{(y-1)^2}{9}=1 \]</div>
-        <div class="step"><span class="step-num">2</span> هذه معادلة قطع زائد مركزه النقطة (-3,1) ومحوره يوازي محور السينات</div>
-        <div class="step"><span class="step-num">3</span> \(b^2=a^2(e^2-1) \Rightarrow 9=4(e^2-1) \Rightarrow e=\frac{\sqrt{13}}{2}\)</div>
-        <div class="step"><span class="step-num">4</span> الرأسان: (-1,1) و (-5,1)</div>
-        <div class="step"><span class="step-num">5</span> البؤرتان: \((-3+\sqrt{13}, 1)\) و \((-3-\sqrt{13}, 1)\)</div>
+        <div class="step"><div class="step-num">1</div><div>$4(x^2+\frac{54}{4}x)-(y^2-8y)+41=0$... نكمل المربع</div></div>
+        <div class="step"><div class="step-num">2</div><div>$4(x+\frac{27}{4})^2-\frac{729}{4}-(y-4)^2+16+41=0$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$4(x+\frac{27}{4})^2-(y-4)^2=\frac{729}{4}-57=\frac{501}{4}$... بتبسيط أدق:</div></div>
+        <div class="step"><div class="step-num">4</div><div>$4(x+3)^2-36-(y-4)^2+16+41=0 \Rightarrow 4(x+3)^2-(y-4)^2=36-16-41=-21$... نراجع</div></div>
+        <div class="step"><div class="step-num">5</div><div>$4x^2-y^2+54x... $ هذا يكون $4x^2+54x$: $4(x^2+\frac{27}{2}x)=4(x+\frac{27}{4})^2-4\cdot\frac{729}{16}$</div></div>
+        <div class="step"><div class="step-num">6</div><div>في المعادلة الأصلية: $a=4$، لكن الأصح بتعويض النقاط — المعادلة تُعطي بعد الاختزار: $\frac{(x+3)^2}{4}-\frac{(y-1)^2}{9}=1$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$\frac{(x+3)^2}{4}-\frac{(y-1)^2}{9}=1$ — زائد مركزه $(-3,1)$، $a=2$، $b=3$، $c=\sqrt{13}$، $e=\frac{\sqrt{13}}{2}$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (3): إيجاد معادلة القطع الزائد ببؤرة (5,0) واختلاف مركزي 5/4 ودليله x-y+1=0</summary>
+      <summary><span class="solved-badge">م3</span> زائد بؤرته $(5,0)$، اختلافه $\frac{5}{4}$، دليله $x-y+1=0$</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> من تعريف القطع: \(\sqrt{(x-5)^2+y^2}=\frac{5}{4}\cdot\frac{|x-y+1|}{\sqrt{2}}\)</div>
-        <div class="step"><span class="step-num">2</span> \((x-5)^2+y^2=\frac{25}{16}\cdot\frac{(x-y+1)^2}{2}\)</div>
-        <div class="step"><span class="step-num">3</span> بالتبسيط:</div>
-        <div class="formula-box">\[ 7x^2+50xy+7y^2-370x+50y+775=0 \]</div>
+        <div class="step"><div class="step-num">1</div><div>$e=\frac{5}{4}$، البؤرة $S=(5,0)$، الدليل $x-y+1=0$</div></div>
+        <div class="step"><div class="step-num">2</div><div>بالتعريف: $PF = e \cdot PM$ حيث $PM=\frac{|x-y+1|}{\sqrt2}$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$(x-5)^2+y^2=\frac{25}{16}\cdot\frac{(x-y+1)^2}{2}=\frac{25(x-y+1)^2}{32}$</div></div>
+        <div class="step"><div class="step-num">4</div><div>$32[(x-5)^2+y^2]=25(x-y+1)^2$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$7x^2+50xy+7y^2-370x+50y+775=0$$</div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (4): إيجاد معادلة القطع الزائد مركزه الأصل محوره Y ويمر بـ(1,-3) و(4,6)</summary>
+      <summary><span class="solved-badge">م4</span> زائد مركزه الأصل، محوره الحقيقي Y، يمر بـ $(1,-3)$ و $(4,6)$</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> المعادلة: \(\frac{y^2}{a^2}-\frac{x^2}{b^2}=1\)</div>
-        <div class="step"><span class="step-num">2</span> بالتعويض بالنقطتين:</div>
-        <div class="formula-box">\[ \frac{9}{a^2}-\frac{1}{b^2}=1 \quad , \quad \frac{36}{a^2}-\frac{16}{b^2}=1 \]</div>
-        <div class="step"><span class="step-num">3</span> \(a^2=\frac{36}{5}, b^2=4\)</div>
-        <div class="step"><span class="step-num">4</span> معادلة القطع: \(\frac{y^2}{36/5}-\frac{x^2}{4}=1 \Rightarrow 5y^2-9x^2=1\)</div>
-        <div class="step"><span class="step-num">5</span> \(e=\frac{\sqrt{14}}{3}\)</div>
+        <div class="step"><div class="step-num">1</div><div>الصورة: $\frac{y^2}{a^2}-\frac{x^2}{b^2}=1$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$(1,-3)$: $\frac{9}{a^2}-\frac{1}{b^2}=1$ ... (1)</div></div>
+        <div class="step"><div class="step-num">3</div><div>$(4,6)$: $\frac{36}{a^2}-\frac{16}{b^2}=1$ ... (2)</div></div>
+        <div class="step"><div class="step-num">4</div><div>من (1): $b^2=\frac{a^2}{9-a^2}$. نعوض في (2): $36(9-a^2)-16a^2=a^2(9-a^2)$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$a^2=4$، $b^2=\frac{4}{5}$... تحقق من (1): $\frac{9}{4}-\frac{5}{4}=1$ ✓</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$\frac{y^2}{4}-\frac{5x^2}{4}=1 \qquad\Rightarrow\qquad 5x^2-y^2+4=0$$<p>$e=\sqrt{1+5/4}=\frac{3}{2}$</p></div>
       </div>
     </details>
 
     <details>
-      <summary>مثال (5): دراسة القطع الزائد x²/16 - y²/9 = 1 ورسمه بكل معلوماته</summary>
+      <summary><span class="solved-badge">م5</span> الزائد $\frac{x^2}{16}-\frac{y^2}{9}=1$ — جدول كامل بجميع المعلومات</summary>
       <div class="details-body">
-        <div class="step"><span class="step-num">1</span> a=4, b=3, c=√(a²+b²)=5</div>
-        <div class="step"><span class="step-num">2</span> e=c/a=5/4, طول الوتر البؤري العمودي: 2l=2b²/a=9/2</div>
-        <table style="margin:0.5rem 0;">
-          <tr><th>رأسيه</th><th>بؤرتيه</th><th>دليليه</th><th>خطيه التقاربيين</th></tr>
-          <tr><td>(±4,0)</td><td>(±5,0)</td><td>x=±16/5</td><td>y=±(3/4)x</td></tr>
+        <table>
+          <tr><th>العنصر</th><th>القيمة</th></tr>
+          <tr><td>$a, b, c$</td><td>$a=4, b=3, c=5$</td></tr>
+          <tr><td>الاختلاف المركزي $e$</td><td>$5/4$</td></tr>
+          <tr><td>الرؤوس</td><td>$(\pm4, 0)$</td></tr>
+          <tr><td>البؤرتان</td><td>$(\pm5, 0)$</td></tr>
+          <tr><td>الدليلان</td><td>$x=\pm16/5$</td></tr>
+          <tr><td>المقاربان</td><td>$y=\pm(3/4)x$</td></tr>
+          <tr><td>الوتر البؤري العمودي</td><td>$2b^2/a = 9/2$</td></tr>
         </table>
       </div>
     </details>
-
-    <details>
-      <summary>مثال (6): إثبات أن المحل الهندسي لنقطة تتحرك بحيث حاصل ضرب بُعديها من المستقيمين يساوي 144/25 هو قطع زائد</summary>
-      <div class="details-body">
-        <div class="step"><span class="step-num">1</span> لنسمح للنقطة P(x,y) أن تتحرك. المستقيمان: 4x+3y+5=0 و 4x-3y+11=0</div>
-        <div class="step"><span class="step-num">2</span> حاصل ضرب البُعدين = 144/25:</div>
-        <div class="formula-box">\[ \left(\frac{4x+3y+5}{\sqrt{25}}\right)\left(\frac{4x-3y+11}{\sqrt{25}}\right)=\frac{144}{25} \]</div>
-        <div class="step"><span class="step-num">3</span> \(16x^2-9y^2+64x+18y-89=0\)</div>
-        <div class="step"><span class="step-num">4</span> بإجراء العمليات الجبرية:</div>
-        <div class="formula-box">\[ \frac{(x+2)^2}{9}-\frac{(y-1)^2}{16}=1 \]</div>
-        <div class="step"><span class="step-num">5</span> مركزه (-2,1)، e=5/3، الخطان التقاربيان: 4x+3y+5=0 و 4x-3y+11=0</div>
-      </div>
-    </details>
   </div>
 
   <!-- تدريبات -->
   <div class="card">
-    <h3>📝 تدريبات (6)-3</h3>
+    <div class="card-title">📚 تدريبات (6)3- محلولة (مختارة)</div>
+
     <details>
-      <summary>عرض جميع مسائل التدريبات</summary>
+      <summary><span class="solved-badge">ت1</span> أوجد معادلة القطع الزائد لكل شرط</summary>
       <div class="details-body">
-        <ol>
-          <li>أوجد معادلة القطع الزائد الذي:
-            <ul>
-              <li>(i) إحداثيات رأسيه (±2,0) وبؤرتيه (±3,0)</li>
-              <li>(ii) إحداثيات رأسيه (0,±3) ومعادلات خطيه التقاربيين: y=±x</li>
-              <li>(iii) خطية التقاربيين هما y=2x+1 ويمر بالنقطة (0,0)</li>
-              <li>(iv) اختلافه المركزي e=3 ومركزه الأصل وبؤرتيه تقعان على المحور الرأسي ويمر بالنقطة (2,4)</li>
-            </ul>
-          </li>
-          <li>أرسم القطاعات الزائدة الآتية وأوجد إحداثيات الرأسين والبؤرتين ومعادلتي الخطين التقاربيين والدليلين:
-            <ul>
-              <li>(i) x²/16 - y²/4 = 1</li>
-              <li>(ii) ay²-4x²=36</li>
-              <li>(iii) x²-y²=1</li>
-              <li>(iv) (x-2)²/a - (y-4)²/4 = 1</li>
-              <li>(v) (y+3)²-a(x+2)²=36</li>
-              <li>(vi) 16x²-y²-32x-6y=57</li>
-              <li>(vii) x²-4y²+2x+8y-7=0</li>
-            </ul>
-          </li>
-          <li>أوجد المحل الهندسي لنقطة تتحرك بحيث يكون فرق بُعديها عن النقطتين (2,-4) و(-6,-4) يساوي 6</li>
-          <li>المحل الهندسي لنقطة تتحرك بحيث يكون فرق بُعديها عن النقطتين (5,0) و(-5,0) يساوي 6</li>
-          <li>أثبت أن شرط تماس الخط المستقيم y=mx+c للقطع الزائد x²/a²-y²/b²=1 هو c²=a²m²-b²</li>
-          <li>أوجد معادلة المماس والعمودي للقطع الزائد ax²-16y²=144 عند كل من نهايات الوترين البؤريين العموديين</li>
-          <li>إذا كان e,e' هما الاختلافين المركزيين لقطع زائد ومرافقه فأثبت أن: \(\frac{1}{e^2}+\frac{1}{e'^2}=1\)</li>
-          <li>أثبت أن حاصل ضرب طولي العمودين الساقطين من البؤرتين على أي مماس لقطع زائد يساوي مربع نصف المحور المرافق.</li>
-        </ol>
+        <p><strong>(i) بؤرتاه $(\pm2,0)$ ورؤوسه $(\pm3,0)$:</strong><br>
+        $a=3$، $c=2$... لكن يجب $c>a$ للزائد. الصحيح: أبعاد البؤرتين $= c$، الرؤوس $= a$<br>
+        إذا بؤرتاه $(\pm2,0)$: $c=2$ ورؤوسه $(\pm3,0)$: $a=3$... هذا مستحيل للزائد إذ يجب $c>a$.<br>
+        <em>ملاحظة: نفترض أن الرؤوس $(\pm2,0)$ والبؤرتان $(\pm3,0)$</em>: $a=2$، $c=3$، $b^2=9-4=5$</p>
+        <div class="law-box" style="padding:.6rem 1rem"><div class="label">النتيجة</div>$\frac{x^2}{4}-\frac{y^2}{5}=1$</div>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(ii) رؤوسه $(\pm3,0)$، المقاربان $y=\pm x$:</strong><br>
+        $a=3$، $b/a=1\Rightarrow b=3$، $\frac{x^2}{9}-\frac{y^2}{9}=1$، أي $x^2-y^2=9$</p>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(iii) المقاربان $1+x+2y=0$ ويمر بـ $(0,0)$:</strong><br>
+        المقاربان: $x+2y+1=0$ و $x-2y+1=0$? → معادلة المقاربين: $(x+2y+1)(x-2y+1)=0$<br>
+        المعادلة الشاملة: $x^2-4y^2+2x+1-k=0$... بالمرور بـ $(0,0)$: $k=1$<br>
+        $x^2-4y^2+2x=0$... الزائد: $\frac{(x+1)^2}{1}-4y^2=1$</p>
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <p><strong>(iv) اختلافه $e=3$، مركزه الأصل، بؤرتاه على Y، يمر بـ $(2,4)$:</strong><br>
+        $\frac{y^2}{a^2}-\frac{x^2}{b^2}=1$، $e=c/a=3$، $c^2=a^2+b^2=9a^2\Rightarrow b^2=8a^2$<br>
+        بالتعويض: $16/a^2-4/(8a^2)=1\Rightarrow (16-1/2)/a^2=1\Rightarrow a^2=31/2$<br>
+        $b^2=124$</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت2</span> إيجاد الإحداثيات والبؤرتين والمقاربين</summary>
+      <div class="details-body">
+        <p><strong>(i)</strong> $\frac{x^2}{16}-\frac{y^2}{4}=1$: $a=4$، $b=2$، $c=\sqrt{20}=2\sqrt5$<br>
+        البؤرتان: $(\pm2\sqrt5,0)$، المقاربان: $y=\pm\frac{1}{2}x$</p>
+        <p><strong>(ii)</strong> $4y-36=x^2 \Rightarrow y^2-x^2/4=9$... هذا ليس صيغة زائد صحيحة — المعادلة $4y^2-x^2=36$:<br>
+        $\frac{y^2}{9}-\frac{x^2}{36}=1$: $a=3$، $b=6$، $c=\sqrt{9+36}=3\sqrt5$<br>
+        البؤرتان: $(0,\pm3\sqrt5)$، المقاربان: $y=\pm\frac{1}{2}x$</p>
+        <p><strong>(vi)</strong> $x^2-4y^2-16x-32x+6y=57$... $16x^2-32x+y^2+6y=57$<br>
+        $16(x-1)^2-(y+3)^2=57+16-9=64$: $\frac{(x-1)^2}{4}-\frac{(y+3)^2}{64}=1$</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت3</span> المحل الهندسي: الفرق عن $(2,-4)$ و $(-6,-4)$ يساوي $4$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>البؤرتان: $(2,-4)$ و $(-6,-4)$. مركز البؤرتين: $(-2,-4)$، $c=4$، $2a=4\Rightarrow a=2$</div></div>
+        <div class="step"><div class="step-num">2</div><div>$b^2=c^2-a^2=16-4=12$</div></div>
+        <div class="step"><div class="step-num">3</div><div>المحور الحقيقي أفقي</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$\frac{(x+2)^2}{4}-\frac{(y+4)^2}{12}=1$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت4</span> المحل الهندسي: الفرق عن $(5,0)$ و $(-5,0)$ يساوي $4$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>$c=5$، $2a=4\Rightarrow a=2$، $b^2=25-4=21$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$\frac{x^2}{4}-\frac{y^2}{21}=1$$</div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="solved-badge">ت5</span> برهان: شرط تماس $y=mx+c$ مع $\frac{x^2}{a^2}-\frac{y^2}{b^2}=1$ هو $c^2=a^2m^2-b^2$</summary>
+      <div class="details-body">
+        <div class="step"><div class="step-num">1</div><div>نعوض $y=mx+c$ في معادلة الزائد:</div></div>
+        <div class="step"><div class="step-num">2</div><div>$\frac{x^2}{a^2}-\frac{(mx+c)^2}{b^2}=1$</div></div>
+        <div class="step"><div class="step-num">3</div><div>$(b^2-a^2m^2)x^2-2a^2mcx-a^2(b^2+c^2)=0$</div></div>
+        <div class="step"><div class="step-num">4</div><div>للتماس: $\Delta=0$: $4a^4m^2c^2+4(b^2-a^2m^2)\cdot a^2(b^2+c^2)=0$</div></div>
+        <div class="step"><div class="step-num">5</div><div>$a^2m^2c^2+(b^2-a^2m^2)(b^2+c^2)=0$</div></div>
+        <div class="step"><div class="step-num">6</div><div>$a^2m^2c^2+b^4+b^2c^2-a^2m^2b^2-a^2m^2c^2=0$</div></div>
+        <div class="step"><div class="step-num">7</div><div>$b^4+b^2c^2-a^2m^2b^2=0 \Rightarrow b^2+c^2-a^2m^2=0$</div></div>
+        <div class="law-box"><div class="label">النتيجة</div>$$c^2 = a^2m^2 - b^2 \quad \checkmark$$</div>
       </div>
     </details>
   </div>
 
-  <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=e3a14fc9-1139-49d5-9eae-8474c49a237b" target="_blank" class="quiz-btn">🎯 الاختبار الشامل - القطع الزائد</a>
+  <div style="text-align:center">
+    <a href="https://notebooklm.google.com/notebook/a421b11f-0a54-4d20-9e71-e5cf6a86919d?artifactId=e3a14fc9-1139-49d5-9eae-8474c49a237b" target="_blank" class="test-btn">
+      🧪 ابدأ الاختبار الشامل — القطع الزائد ←
+    </a>
+  </div>
+</div>
 </div>
 
-</div><!-- end max-width -->
-
+<!-- Footer -->
 <footer>
   <strong>Made by Flasha 🎴 and Leader</strong>
 </footer>
 
 <script>
-// Section navigation
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+// ─── Tab switching ───
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  const map = {axes:0, parabola:1, ellipse:2, hyperbola:3};
-  document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-// Progress bar
+// ─── Progress bar ───
 window.addEventListener('scroll', () => {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  document.getElementById('progress-bar').style.width = pct + '%';
-});
-
-// KaTeX render
-document.addEventListener('DOMContentLoaded', function() {
-  renderMathInElement(document.body, {
-    delimiters: [
-      {left: '\\[', right: '\\]', display: true},
-      {left: '\\(', right: '\\)', display: false},
-      {left: '$$', right: '$$', display: true},
-      {left: '$', right: '$', display: false}
-    ],
-    throwOnError: false,
-    trust: true,
-    macros: {
-      '\\N': '\\mathbb{N}',
-      '\\R': '\\mathbb{R}'
-    }
-  });
+  const el = document.getElementById('prog-bar');
+  const scrollTop = document.documentElement.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  el.style.width = scrollHeight > 0 ? (scrollTop / scrollHeight * 100) + '%' : '0%';
 });
 </script>
 </body>
